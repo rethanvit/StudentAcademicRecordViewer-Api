@@ -42,8 +42,10 @@ namespace SRV.DL.Migrations
                     b.Property<DateTime>("StopDate")
                         .HasColumnType("smalldatetime");
 
-                    b.Property<int?>("Term")
-                        .HasColumnType("int");
+                    b.Property<int>("Term")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<int>("Year")
                         .HasColumnType("int");
@@ -62,6 +64,7 @@ namespace SRV.DL.Migrations
                             RefAcademicTermId = 1,
                             StartDate = new DateTime(2020, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             StopDate = new DateTime(2020, 2, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Term = 0,
                             Year = 2020
                         },
                         new

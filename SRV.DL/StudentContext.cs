@@ -48,6 +48,7 @@ namespace SRV.DL
             
             modelBuilder.Entity<AcademicTermDetail>().Property(p => p.StartDate).HasColumnType("smalldatetime");
             modelBuilder.Entity<AcademicTermDetail>().Property(p => p.StopDate).HasColumnType("smalldatetime");
+            modelBuilder.Entity<AcademicTermDetail>().Property(p => p.Term).HasDefaultValue(0);
             //modelBuilder.Entity<StudentCourse>().HasOne(o => o.RefAcademicSystem).WithMany(b => b.StudentCourses).HasForeignKey(d => d.AcademicSystemId);
             //modelBuilder.Entity<StudentCourse>().HasOne(o => o.RefAcademicSystem).WithMany(c => c.StudentCourses).OnDelete(DeleteBehavior.NoAction);
 
@@ -77,7 +78,7 @@ namespace SRV.DL
             modelBuilder.Entity<RefAcademicTerm>().HasData(academicTerms);
 
             var academicTermDetails = new List<AcademicTermDetail> {
-                new AcademicTermDetail {Id = 1, Year = 2020, Term = null, StartDate = new DateTime(2020, 01, 01), StopDate = new DateTime(2020,02,02), RefAcademicTermId = 1},
+                new AcademicTermDetail {Id = 1, Year = 2020, Term = 0, StartDate = new DateTime(2020, 01, 01), StopDate = new DateTime(2020,02,02), RefAcademicTermId = 1},
                 new AcademicTermDetail {Id = 2, Year = 2020, Term = 1, StartDate = new DateTime(2020, 01, 01), StopDate = new DateTime(2020,05,31), RefAcademicTermId = 2},
                 new AcademicTermDetail {Id = 3, Year = 2020, Term = 2, StartDate = new DateTime(2020, 06, 01), StopDate = new DateTime(2020,12,31), RefAcademicTermId = 2}
             };

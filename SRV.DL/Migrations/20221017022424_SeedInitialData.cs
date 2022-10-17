@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -25,10 +26,14 @@ namespace SRV.DL.Migrations
 
             migrationBuilder.InsertData(
                 table: "AcademicTermDetails",
+                columns: new[] { "Id", "Active", "RefAcademicTermId", "StartDate", "StopDate", "Year" },
+                values: new object[] { 1, false, 1, new DateTime(2020, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2020, 2, 2, 0, 0, 0, 0, DateTimeKind.Unspecified), 2020 });
+
+            migrationBuilder.InsertData(
+                table: "AcademicTermDetails",
                 columns: new[] { "Id", "Active", "RefAcademicTermId", "StartDate", "StopDate", "Term", "Year" },
                 values: new object[,]
                 {
-                    { 1, false, 1, new DateTime(2020, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2020, 2, 2, 0, 0, 0, 0, DateTimeKind.Unspecified), null, 2020 },
                     { 2, false, 2, new DateTime(2020, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2020, 5, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, 2020 },
                     { 3, false, 2, new DateTime(2020, 6, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2020, 12, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), 2, 2020 }
                 });

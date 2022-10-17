@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -46,7 +47,7 @@ namespace SRV.DL.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Year = table.Column<int>(type: "int", nullable: false),
-                    Term = table.Column<int>(type: "int", nullable: true),
+                    Term = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     StartDate = table.Column<DateTime>(type: "smalldatetime", nullable: false),
                     StopDate = table.Column<DateTime>(type: "smalldatetime", nullable: false),
                     Active = table.Column<bool>(type: "bit", nullable: false),

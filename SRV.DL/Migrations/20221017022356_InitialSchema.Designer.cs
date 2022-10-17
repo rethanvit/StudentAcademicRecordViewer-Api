@@ -12,8 +12,8 @@ using SRV.DL;
 namespace SRV.DL.Migrations
 {
     [DbContext(typeof(StudentContext))]
-    [Migration("20221014220013_SeedInitialData")]
-    partial class SeedInitialData
+    [Migration("20221017022356_InitialSchema")]
+    partial class InitialSchema
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -44,8 +44,10 @@ namespace SRV.DL.Migrations
                     b.Property<DateTime>("StopDate")
                         .HasColumnType("smalldatetime");
 
-                    b.Property<int?>("Term")
-                        .HasColumnType("int");
+                    b.Property<int>("Term")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<int>("Year")
                         .HasColumnType("int");
@@ -55,37 +57,6 @@ namespace SRV.DL.Migrations
                     b.HasIndex("RefAcademicTermId");
 
                     b.ToTable("AcademicTermDetails");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Active = false,
-                            RefAcademicTermId = 1,
-                            StartDate = new DateTime(2020, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            StopDate = new DateTime(2020, 2, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Year = 2020
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Active = false,
-                            RefAcademicTermId = 2,
-                            StartDate = new DateTime(2020, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            StopDate = new DateTime(2020, 5, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Term = 1,
-                            Year = 2020
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Active = false,
-                            RefAcademicTermId = 2,
-                            StartDate = new DateTime(2020, 6, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            StopDate = new DateTime(2020, 12, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Term = 2,
-                            Year = 2020
-                        });
                 });
 
             modelBuilder.Entity("SRV.DL.Course", b =>
@@ -127,41 +98,6 @@ namespace SRV.DL.Migrations
                     b.HasIndex("OrganizationId");
 
                     b.ToTable("Courses");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Active = true,
-                            Code = "MBA",
-                            DepartmentId = 1,
-                            Name = "Masters in Business Administration",
-                            OrganizationId = 1,
-                            StartDate = new DateTime(2021, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            StopDate = new DateTime(2079, 6, 6, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Active = true,
-                            Code = "ACC",
-                            DepartmentId = 1,
-                            Name = "Masters in Accounts",
-                            OrganizationId = 1,
-                            StartDate = new DateTime(2021, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            StopDate = new DateTime(2079, 6, 6, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Active = true,
-                            Code = "FIN",
-                            DepartmentId = 1,
-                            Name = "Masters in Finanace",
-                            OrganizationId = 1,
-                            StartDate = new DateTime(2021, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            StopDate = new DateTime(2079, 6, 6, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
                 });
 
             modelBuilder.Entity("SRV.DL.Department", b =>
@@ -213,21 +149,6 @@ namespace SRV.DL.Migrations
                     b.HasIndex("OrganizationId");
 
                     b.ToTable("Departments");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AcademicTermId = 1,
-                            Active = true,
-                            Code = "BUS",
-                            MaxMarks = 100,
-                            MinMarks = 40,
-                            Name = "School of Business",
-                            OrganizationId = 1,
-                            StartDate = new DateTime(2021, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            StopDate = new DateTime(2079, 6, 6, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
                 });
 
             modelBuilder.Entity("SRV.DL.Organization", b =>
@@ -254,16 +175,6 @@ namespace SRV.DL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Organizations");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Active = true,
-                            Name = "LLC School of Business",
-                            StartDate = new DateTime(2021, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            StopDate = new DateTime(2079, 6, 6, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
                 });
 
             modelBuilder.Entity("SRV.DL.RefAcademicTerm", b =>
@@ -287,29 +198,6 @@ namespace SRV.DL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("RefAcademicTerms");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Active = true,
-                            Name = "Annual",
-                            Terms = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Active = false,
-                            Name = "Semester",
-                            Terms = 2
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Active = false,
-                            Name = "Quarter",
-                            Terms = 3
-                        });
                 });
 
             modelBuilder.Entity("SRV.DL.Student", b =>
@@ -347,28 +235,6 @@ namespace SRV.DL.Migrations
                     b.HasIndex("OrganizationId");
 
                     b.ToTable("Students");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            DepartmentId = 1,
-                            FirstName = "Johnny",
-                            LastName = "Patty",
-                            OrganizationId = 1,
-                            StartDate = new DateTime(2021, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            StopDate = new DateTime(2079, 6, 6, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 2,
-                            DepartmentId = 1,
-                            FirstName = "Alia",
-                            LastName = "Thomson",
-                            OrganizationId = 1,
-                            StartDate = new DateTime(2021, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            StopDate = new DateTime(2079, 6, 6, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
                 });
 
             modelBuilder.Entity("SRV.DL.StudentCourse", b =>
@@ -400,32 +266,6 @@ namespace SRV.DL.Migrations
                     b.HasIndex("StudentId");
 
                     b.ToTable("StudentCourses");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AcademicTermDetailId = 1,
-                            CourseId = 2,
-                            Marks = 45.0,
-                            StudentId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            AcademicTermDetailId = 2,
-                            CourseId = 1,
-                            Marks = 45.0,
-                            StudentId = 1
-                        },
-                        new
-                        {
-                            Id = 3,
-                            AcademicTermDetailId = 2,
-                            CourseId = 1,
-                            Marks = 45.0,
-                            StudentId = 2
-                        });
                 });
 
             modelBuilder.Entity("SRV.DL.AcademicTermDetail", b =>
