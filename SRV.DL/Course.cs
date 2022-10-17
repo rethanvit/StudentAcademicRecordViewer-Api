@@ -2,7 +2,7 @@
 
 namespace SRV.DL
 {
-    internal class Course
+    public class Course
     {
         public int Id { get; set; }
 

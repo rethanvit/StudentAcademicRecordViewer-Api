@@ -1,6 +1,6 @@
 ﻿namespace SRV.DL
 {
-    internal class Organization
+    public class Organization
     {
         public int Id { get; set; }
         public string Name { get; set; }

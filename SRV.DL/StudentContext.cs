@@ -12,9 +12,15 @@ namespace SRV.DL
         public DbSet<AcademicTermDetail> AcademicTermDetails { get; set; }
         public DbSet<Student> Students { get; set; }
 
+        public StudentContext(DbContextOptions options):base(options)
+        {
+
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=SRVTest");
+            if (!optionsBuilder.IsConfigured)
+                optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=SRVTest");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

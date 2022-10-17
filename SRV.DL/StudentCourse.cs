@@ -1,6 +1,6 @@
 ﻿namespace SRV.DL
 {
-    internal class StudentCourse
+    public class StudentCourse
     {
         public int Id { get; set; }
         public int CourseId { get; set; }

@@ -1,6 +1,6 @@
 ﻿namespace SRV.DL
 {
-    internal class RefAcademicTerm
+    public class RefAcademicTerm
     {
         public int Id { get; set; }
         public string Name { get; set; }
