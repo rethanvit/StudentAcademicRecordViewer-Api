@@ -8,22 +8,35 @@ namespace SRV.Api.Controllers
     [ApiController]
     public class StudentsController : ControllerBase
     {
-        private readonly IStudentService _studentService;
+        private readonly IStudentRepository _studentRepository;
 
-        public StudentsController(IStudentService studentService)
+        public StudentsController(IStudentRepository studentRepository)
         {
-            _studentService = studentService;
+            _studentRepository = studentRepository;
         }
 
-        [HttpGet]
+        [HttpGet("{id:int}")]
+        //[Route("courses/test")]
         public async Task<ActionResult<StudentDtoForGet>> Get(int id)
         {
-            var student = await _studentService.GetStudentByIdAsync(id);
+            var student = await _studentRepository.GetStudentByIdAsync(id);
 
             if(student == null)
                 return NotFound("Provided student doesn't exist.");
 
             return Ok(student);
         }
+
+        [HttpGet("{id:int}/withCourses")]
+        public async Task<ActionResult<StudentWithCoursesDtoGet>> GetStudentWithCourses(int id)
+        {
+            var student = await _studentRepository.GetStudentAndCoursesByIdAsync(id);
+
+            if (student == null)
+                return NotFound("Provided student doesn't exist.");
+
+            return Ok(student);
+        }
+
     }
 }

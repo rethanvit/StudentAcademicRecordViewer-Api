@@ -1,9 +1,11 @@
-﻿using SRV.DL;
+﻿using SRV.Api.Models;
+using SRV.DL;
 
 namespace SRV.Api.Services
 {
     public interface IStudentRepository
     {
-        Task<Student> GetStudentByIdAsync(int Id);
+        Task<StudentWithCoursesDtoGet> GetStudentAndCoursesByIdAsync(int id);
+        Task<StudentDtoForGet> GetStudentByIdAsync(int id);
     }
 }
