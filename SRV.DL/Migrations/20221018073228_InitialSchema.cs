@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -151,32 +152,50 @@ namespace SRV.DL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "StudentCourses",
+                name: "OfferedCoursesInTerms",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CourseId = table.Column<int>(type: "int", nullable: false),
-                    StudentId = table.Column<int>(type: "int", nullable: false),
-                    AcademicTermDetailId = table.Column<int>(type: "int", nullable: false),
-                    Marks = table.Column<double>(type: "float", nullable: false)
+                    AcademicTermDetailId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_StudentCourses", x => x.Id);
-                    table.UniqueConstraint("AK_StudentCourses_CourseId_StudentId_AcademicTermDetailId", x => new { x.CourseId, x.StudentId, x.AcademicTermDetailId });
+                    table.PrimaryKey("PK_OfferedCoursesInTerms", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_StudentCourses_AcademicTermDetails_AcademicTermDetailId",
+                        name: "FK_OfferedCoursesInTerms_AcademicTermDetails_AcademicTermDetailId",
                         column: x => x.AcademicTermDetailId,
                         principalTable: "AcademicTermDetails",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_StudentCourses_Courses_CourseId",
+                        name: "FK_OfferedCoursesInTerms_Courses_CourseId",
                         column: x => x.CourseId,
                         principalTable: "Courses",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EnrolledCourses",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    StudentId = table.Column<int>(type: "int", nullable: false),
+                    Marks = table.Column<double>(type: "float", nullable: false),
+                    OfferedCoursesInTermId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EnrolledCourses", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_StudentCourses_Students_StudentId",
+                        name: "FK_EnrolledCourses_OfferedCoursesInTerms_OfferedCoursesInTermId",
+                        column: x => x.OfferedCoursesInTermId,
+                        principalTable: "OfferedCoursesInTerms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_EnrolledCourses_Students_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Students",
                         principalColumn: "Id");
@@ -208,14 +227,24 @@ namespace SRV.DL.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StudentCourses_AcademicTermDetailId",
-                table: "StudentCourses",
+                name: "IX_EnrolledCourses_OfferedCoursesInTermId",
+                table: "EnrolledCourses",
+                column: "OfferedCoursesInTermId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EnrolledCourses_StudentId",
+                table: "EnrolledCourses",
+                column: "StudentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OfferedCoursesInTerms_AcademicTermDetailId",
+                table: "OfferedCoursesInTerms",
                 column: "AcademicTermDetailId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StudentCourses_StudentId",
-                table: "StudentCourses",
-                column: "StudentId");
+                name: "IX_OfferedCoursesInTerms_CourseId",
+                table: "OfferedCoursesInTerms",
+                column: "CourseId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Students_DepartmentId",
@@ -231,16 +260,19 @@ namespace SRV.DL.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "StudentCourses");
+                name: "EnrolledCourses");
+
+            migrationBuilder.DropTable(
+                name: "OfferedCoursesInTerms");
+
+            migrationBuilder.DropTable(
+                name: "Students");
 
             migrationBuilder.DropTable(
                 name: "AcademicTermDetails");
 
             migrationBuilder.DropTable(
                 name: "Courses");
-
-            migrationBuilder.DropTable(
-                name: "Students");
 
             migrationBuilder.DropTable(
                 name: "Departments");

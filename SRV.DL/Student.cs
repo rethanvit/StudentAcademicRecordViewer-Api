@@ -11,6 +11,6 @@
         public Organization Organization { get; set; }
         public int DepartmentId { get; set; }
         public Department Department { get; set; }
-        public List<StudentCourse> StudentCourses { get; set; }
+        public List<EnrolledCourse> EnrolledCourses { get; set; }
     }
 }

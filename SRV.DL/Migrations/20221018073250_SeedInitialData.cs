@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -62,19 +63,34 @@ namespace SRV.DL.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "StudentCourses",
-                columns: new[] { "Id", "AcademicTermDetailId", "CourseId", "Marks", "StudentId" },
-                values: new object[] { 1, 1, 2, 45.0, 1 });
+                table: "OfferedCoursesInTerms",
+                columns: new[] { "Id", "AcademicTermDetailId", "CourseId" },
+                values: new object[] { 1, 1, 1 });
 
             migrationBuilder.InsertData(
-                table: "StudentCourses",
-                columns: new[] { "Id", "AcademicTermDetailId", "CourseId", "Marks", "StudentId" },
-                values: new object[] { 2, 2, 1, 45.0, 1 });
+                table: "OfferedCoursesInTerms",
+                columns: new[] { "Id", "AcademicTermDetailId", "CourseId" },
+                values: new object[] { 2, 2, 2 });
 
             migrationBuilder.InsertData(
-                table: "StudentCourses",
-                columns: new[] { "Id", "AcademicTermDetailId", "CourseId", "Marks", "StudentId" },
-                values: new object[] { 3, 2, 1, 45.0, 2 });
+                table: "OfferedCoursesInTerms",
+                columns: new[] { "Id", "AcademicTermDetailId", "CourseId" },
+                values: new object[] { 3, 2, 3 });
+
+            migrationBuilder.InsertData(
+                table: "EnrolledCourses",
+                columns: new[] { "Id", "Marks", "OfferedCoursesInTermId", "StudentId" },
+                values: new object[] { 1, 45.0, 1, 1 });
+
+            migrationBuilder.InsertData(
+                table: "EnrolledCourses",
+                columns: new[] { "Id", "Marks", "OfferedCoursesInTermId", "StudentId" },
+                values: new object[] { 2, 45.0, 2, 1 });
+
+            migrationBuilder.InsertData(
+                table: "EnrolledCourses",
+                columns: new[] { "Id", "Marks", "OfferedCoursesInTermId", "StudentId" },
+                values: new object[] { 3, 45.0, 3, 2 });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -85,7 +101,17 @@ namespace SRV.DL.Migrations
                 keyValue: 3);
 
             migrationBuilder.DeleteData(
-                table: "Courses",
+                table: "EnrolledCourses",
+                keyColumn: "Id",
+                keyValue: 1);
+
+            migrationBuilder.DeleteData(
+                table: "EnrolledCourses",
+                keyColumn: "Id",
+                keyValue: 2);
+
+            migrationBuilder.DeleteData(
+                table: "EnrolledCourses",
                 keyColumn: "Id",
                 keyValue: 3);
 
@@ -95,21 +121,31 @@ namespace SRV.DL.Migrations
                 keyValue: 3);
 
             migrationBuilder.DeleteData(
-                table: "StudentCourses",
+                table: "OfferedCoursesInTerms",
                 keyColumn: "Id",
                 keyValue: 1);
 
             migrationBuilder.DeleteData(
-                table: "StudentCourses",
+                table: "OfferedCoursesInTerms",
                 keyColumn: "Id",
                 keyValue: 2);
 
             migrationBuilder.DeleteData(
-                table: "StudentCourses",
+                table: "OfferedCoursesInTerms",
                 keyColumn: "Id",
                 keyValue: 3);
 
             migrationBuilder.DeleteData(
+                table: "Students",
+                keyColumn: "Id",
+                keyValue: 1);
+
+            migrationBuilder.DeleteData(
+                table: "Students",
+                keyColumn: "Id",
+                keyValue: 2);
+
+            migrationBuilder.DeleteData(
                 table: "AcademicTermDetails",
                 keyColumn: "Id",
                 keyValue: 1);
@@ -130,14 +166,9 @@ namespace SRV.DL.Migrations
                 keyValue: 2);
 
             migrationBuilder.DeleteData(
-                table: "Students",
+                table: "Courses",
                 keyColumn: "Id",
-                keyValue: 1);
-
-            migrationBuilder.DeleteData(
-                table: "Students",
-                keyColumn: "Id",
-                keyValue: 2);
+                keyValue: 3);
 
             migrationBuilder.DeleteData(
                 table: "Departments",

@@ -8,9 +8,10 @@ namespace SRV.DL
         public DbSet<Department> Departments { get; set; }
         public DbSet<Course> Courses { get; set; }
         public DbSet<RefAcademicTerm> RefAcademicTerms { get; set; }
-        public DbSet<StudentCourse> StudentCourses { get; set; }
+        public DbSet<EnrolledCourse> EnrolledCourses { get; set; }
         public DbSet<AcademicTermDetail> AcademicTermDetails { get; set; }
         public DbSet<Student> Students { get; set; }
+        public DbSet<OfferedCoursesInTerm> OfferedCoursesInTerms { get; set; }
 
         public StudentContext(DbContextOptions options):base(options)
         {
@@ -32,10 +33,15 @@ namespace SRV.DL
             modelBuilder.Entity<Course>().Property(d => d.StartDate).HasColumnType("smalldatetime");
             modelBuilder.Entity<Course>().Property(d => d.StopDate).HasColumnType("smalldatetime");
 
-            modelBuilder.Entity<StudentCourse>().HasOne(o => o.Course).WithMany(c => c.StudentCourses).OnDelete(DeleteBehavior.NoAction);
-            modelBuilder.Entity<StudentCourse>().HasOne(o => o.Student).WithMany(c => c.StudentCourses).OnDelete(DeleteBehavior.NoAction);
-            modelBuilder.Entity<StudentCourse>().HasOne(o => o.AcademicTermDetail).WithMany(c => c.StudentCourses).OnDelete(DeleteBehavior.NoAction);
-            modelBuilder.Entity<StudentCourse>().HasAlternateKey(c => new { c.CourseId, c.StudentId, c.AcademicTermDetailId });
+            //modelBuilder.Entity<StudentCourse>().HasOne(o => o.Course).WithMany(c => c.StudentCourses).OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<EnrolledCourse>().HasOne(o => o.Student).WithMany(c => c.EnrolledCourses).OnDelete(DeleteBehavior.NoAction);
+            //modelBuilder.Entity<StudentCourse>().HasOne(o => o.AcademicTermDetail).WithMany(c => c.StudentCourses).OnDelete(DeleteBehavior.NoAction);
+            //modelBuilder.Entity<StudentCourse>().HasAlternateKey(c => new { c.CourseId, c.StudentId, c.AcademicTermDetailId });
+
+
+            modelBuilder.Entity<OfferedCoursesInTerm>().HasOne(o => o.Course).WithMany(c => c.OfferedCoursesInTerms).OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<OfferedCoursesInTerm>().HasOne(o => o.AcademicTermDetail).WithMany(c => c.OfferedCoursesInTerms).OnDelete(DeleteBehavior.NoAction);
+
 
             modelBuilder.Entity<Department>().HasOne(o => o.RefAcademicTerm).WithMany(b => b.Departments).HasForeignKey(d => d.AcademicTermId);
             modelBuilder.Entity<Department>().HasOne(o => o.RefAcademicTerm).WithMany(c => c.Departments).OnDelete(DeleteBehavior.NoAction);
@@ -50,7 +56,7 @@ namespace SRV.DL
             modelBuilder.Entity<Student>().HasOne(o => o.Department).WithMany(c => c.Students).OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<Student>().Property(d => d.StartDate).HasColumnType("smalldatetime");
             modelBuilder.Entity<Student>().Property(d => d.StopDate).HasColumnType("smalldatetime");
-            modelBuilder.Entity<AcademicTermDetail>().HasOne(o => o.RefAcademicTerm).WithMany(c => c.AcademicSystemDetails).OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<AcademicTermDetail>().HasOne(o => o.RefAcademicTerm).WithMany(c => c.AcademicTermDetails).OnDelete(DeleteBehavior.NoAction);
             
             modelBuilder.Entity<AcademicTermDetail>().Property(p => p.StartDate).HasColumnType("smalldatetime");
             modelBuilder.Entity<AcademicTermDetail>().Property(p => p.StopDate).HasColumnType("smalldatetime");
@@ -100,18 +106,32 @@ namespace SRV.DL
             };
             modelBuilder.Entity<Course>().HasData(courses);
 
+            var offeredCoursesInTerm = new List<OfferedCoursesInTerm> {
+                new OfferedCoursesInTerm { Id = 1, CourseId = 1, AcademicTermDetailId = 1 },
+                new OfferedCoursesInTerm { Id = 2, CourseId = 2, AcademicTermDetailId = 2 },
+                new OfferedCoursesInTerm { Id = 3, CourseId = 3, AcademicTermDetailId = 2 }
+            };
+            modelBuilder.Entity<OfferedCoursesInTerm>().HasData(offeredCoursesInTerm);
+
+            //var joinEntityStudentCoursesOfferedCourses = new List<object> { new { OfferedCoursesInTermsId  = 1, EnrolledCoursesId = 1 },
+            //                                                                new { OfferedCoursesInTermsId  = 1, EnrolledCoursesId = 2 },
+            //                                                                new { OfferedCoursesInTermsId = 2, EnrolledCoursesId = 3 }
+            //};
+            //modelBuilder.Entity<EnrolledCourse>().HasMany(c => c.OfferedCoursesInTerms).WithMany(d => d.EnrolledCourses).UsingEntity(e => e.HasData(joinEntityStudentCoursesOfferedCourses));
+
             var student = new List<Student> {
                 new Student { Id = 1, FirstName = "Johnny", LastName="Patty",DepartmentId = 1, OrganizationId = 1, StartDate = new DateTime(2021,01,01), StopDate = new DateTime(2079,06,06)},
                 new Student { Id = 2, FirstName = "Alia", LastName="Thomson",DepartmentId = 1, OrganizationId = 1, StartDate = new DateTime(2021,01,01), StopDate = new DateTime(2079,06,06)}
             };
             modelBuilder.Entity<Student>().HasData(student);
 
-            var studentCourses = new List<StudentCourse> {
-                new StudentCourse {Id = 1, AcademicTermDetailId = 1,CourseId = 2, Marks = 45, StudentId = 1 },
-                new StudentCourse {Id = 2, AcademicTermDetailId = 2,CourseId = 1, Marks = 45, StudentId = 1 },
-                new StudentCourse {Id = 3, AcademicTermDetailId = 2,CourseId = 1, Marks = 45, StudentId = 2 }
+            var studentCourses = new List<EnrolledCourse>
+            {
+                new EnrolledCourse {Id = 1,Marks = 45, StudentId = 1, OfferedCoursesInTermId = 1 },
+                new EnrolledCourse {Id = 2,Marks = 45, StudentId = 1, OfferedCoursesInTermId =  2},
+                new EnrolledCourse {Id = 3,Marks = 45, StudentId = 2, OfferedCoursesInTermId =  3}
             };
-            modelBuilder.Entity<StudentCourse>().HasData(studentCourses);
+            modelBuilder.Entity<EnrolledCourse>().HasData(studentCourses);
         }
     }
 }

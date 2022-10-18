@@ -10,6 +10,6 @@
         public bool Active { get; set; }
         public int RefAcademicTermId { get; set; }
         public RefAcademicTerm RefAcademicTerm { get; set; }
-        public List<StudentCourse> StudentCourses { get; set; }
+        public List<OfferedCoursesInTerm> OfferedCoursesInTerms { get; set; }
     }
 }

@@ -12,7 +12,7 @@ using SRV.DL;
 namespace SRV.DL.Migrations
 {
     [DbContext(typeof(StudentContext))]
-    [Migration("20221017022356_InitialSchema")]
+    [Migration("20221018073228_InitialSchema")]
     partial class InitialSchema
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -151,6 +151,55 @@ namespace SRV.DL.Migrations
                     b.ToTable("Departments");
                 });
 
+            modelBuilder.Entity("SRV.DL.EnrolledCourse", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<double>("Marks")
+                        .HasColumnType("float");
+
+                    b.Property<int>("OfferedCoursesInTermId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OfferedCoursesInTermId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("EnrolledCourses");
+                });
+
+            modelBuilder.Entity("SRV.DL.OfferedCoursesInTerm", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("AcademicTermDetailId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AcademicTermDetailId");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("OfferedCoursesInTerms");
+                });
+
             modelBuilder.Entity("SRV.DL.Organization", b =>
                 {
                     b.Property<int>("Id")
@@ -237,41 +286,10 @@ namespace SRV.DL.Migrations
                     b.ToTable("Students");
                 });
 
-            modelBuilder.Entity("SRV.DL.StudentCourse", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("AcademicTermDetailId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
-
-                    b.Property<double>("Marks")
-                        .HasColumnType("float");
-
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasAlternateKey("CourseId", "StudentId", "AcademicTermDetailId");
-
-                    b.HasIndex("AcademicTermDetailId");
-
-                    b.HasIndex("StudentId");
-
-                    b.ToTable("StudentCourses");
-                });
-
             modelBuilder.Entity("SRV.DL.AcademicTermDetail", b =>
                 {
                     b.HasOne("SRV.DL.RefAcademicTerm", "RefAcademicTerm")
-                        .WithMany("AcademicSystemDetails")
+                        .WithMany("AcademicTermDetails")
                         .HasForeignKey("RefAcademicTermId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -317,6 +335,44 @@ namespace SRV.DL.Migrations
                     b.Navigation("RefAcademicTerm");
                 });
 
+            modelBuilder.Entity("SRV.DL.EnrolledCourse", b =>
+                {
+                    b.HasOne("SRV.DL.OfferedCoursesInTerm", "OfferedCoursesInTerm")
+                        .WithMany("EnrolledCourses")
+                        .HasForeignKey("OfferedCoursesInTermId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SRV.DL.Student", "Student")
+                        .WithMany("EnrolledCourses")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("OfferedCoursesInTerm");
+
+                    b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("SRV.DL.OfferedCoursesInTerm", b =>
+                {
+                    b.HasOne("SRV.DL.AcademicTermDetail", "AcademicTermDetail")
+                        .WithMany("OfferedCoursesInTerms")
+                        .HasForeignKey("AcademicTermDetailId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("SRV.DL.Course", "Course")
+                        .WithMany("OfferedCoursesInTerms")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("AcademicTermDetail");
+
+                    b.Navigation("Course");
+                });
+
             modelBuilder.Entity("SRV.DL.Student", b =>
                 {
                     b.HasOne("SRV.DL.Department", "Department")
@@ -336,41 +392,14 @@ namespace SRV.DL.Migrations
                     b.Navigation("Organization");
                 });
 
-            modelBuilder.Entity("SRV.DL.StudentCourse", b =>
-                {
-                    b.HasOne("SRV.DL.AcademicTermDetail", "AcademicTermDetail")
-                        .WithMany("StudentCourses")
-                        .HasForeignKey("AcademicTermDetailId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("SRV.DL.Course", "Course")
-                        .WithMany("StudentCourses")
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("SRV.DL.Student", "Student")
-                        .WithMany("StudentCourses")
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("AcademicTermDetail");
-
-                    b.Navigation("Course");
-
-                    b.Navigation("Student");
-                });
-
             modelBuilder.Entity("SRV.DL.AcademicTermDetail", b =>
                 {
-                    b.Navigation("StudentCourses");
+                    b.Navigation("OfferedCoursesInTerms");
                 });
 
             modelBuilder.Entity("SRV.DL.Course", b =>
                 {
-                    b.Navigation("StudentCourses");
+                    b.Navigation("OfferedCoursesInTerms");
                 });
 
             modelBuilder.Entity("SRV.DL.Department", b =>
@@ -378,6 +407,11 @@ namespace SRV.DL.Migrations
                     b.Navigation("Courses");
 
                     b.Navigation("Students");
+                });
+
+            modelBuilder.Entity("SRV.DL.OfferedCoursesInTerm", b =>
+                {
+                    b.Navigation("EnrolledCourses");
                 });
 
             modelBuilder.Entity("SRV.DL.Organization", b =>
@@ -391,14 +425,14 @@ namespace SRV.DL.Migrations
 
             modelBuilder.Entity("SRV.DL.RefAcademicTerm", b =>
                 {
-                    b.Navigation("AcademicSystemDetails");
+                    b.Navigation("AcademicTermDetails");
 
                     b.Navigation("Departments");
                 });
 
             modelBuilder.Entity("SRV.DL.Student", b =>
                 {
-                    b.Navigation("StudentCourses");
+                    b.Navigation("EnrolledCourses");
                 });
 #pragma warning restore 612, 618
         }
