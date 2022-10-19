@@ -5,7 +5,7 @@
         public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public IReadOnlyCollection<EnrolledCourseDetailsDto> EnrolledCourses { get; set; }
+        public List<EnrolledCourseDetailsDto> EnrolledCourses { get; set; } = new List<EnrolledCourseDetailsDto>();
 
     }
 
