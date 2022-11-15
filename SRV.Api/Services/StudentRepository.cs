@@ -62,37 +62,48 @@ namespace SRV.Api.Services
             //            on course.DepartmentId equals department.Id
             //            select new { student.Id, student.FirstName, student.LastName, course.Code, courseName = course.Name, departmentName = department.Name, academicTermDetail.Year, academicTermDetail.Term, studentEnrolledCourse.Marks }).ToList();
 
-            var studentEntityWithCourses = 
+            var studentEntityWithCourses =
                 await (from student in _studentContext.Students
-                join studentEC in (from enrolledCourse in _studentContext.EnrolledCourses
-                         join offeredCourseInTerm in _studentContext.OfferedCoursesInTerms
-                         on enrolledCourse.OfferedCoursesInTermId equals offeredCourseInTerm.Id
-                         join academicTermDetail in _studentContext.AcademicTermDetails
-                         on offeredCourseInTerm.AcademicTermDetailId equals academicTermDetail.Id
-                         join course in _studentContext.Courses
-                         on offeredCourseInTerm.CourseId equals course.Id
-                         join department in _studentContext.Departments
-                         on course.DepartmentId equals department.Id
-                         where enrolledCourse.StudentId == id
-                         select new { enrolledCourse.StudentId, course.Code, courseName = course.Name, departmentName = department.Name, academicTermDetail.Year, academicTermDetail.Term, enrolledCourse.Marks })
-                 on student.Id equals studentEC.StudentId
-                 into CoursesEnrolledByStudents
-                 from coursesEnrolledByStudent in CoursesEnrolledByStudents.DefaultIfEmpty()
-                 where student.Id == id
-                 select new { student.Id, student.FirstName, student.LastName, coursesEnrolledByStudent.Code, coursesEnrolledByStudent.courseName, coursesEnrolledByStudent.departmentName, Year = (int?)coursesEnrolledByStudent.Year, Term = (int?)coursesEnrolledByStudent.Term, Marks = (double?) coursesEnrolledByStudent.Marks }).ToListAsync();
+                       join studentEC in (from enrolledCourse in _studentContext.EnrolledCourses
+                                          join offeredCourseInTerm in _studentContext.OfferedCourses
+                                          on enrolledCourse.AcademicCalendarDetailId equals offeredCourseInTerm.AcademicCalendarDetailId
+                                          join academicCalendarDetail in _studentContext.AcademicCalendarDetails
+                                          on enrolledCourse.AcademicCalendarDetailId equals academicCalendarDetail.AcademicCalendarDetailId
+                                          join refAcademicCalendar in _studentContext.RefAcademicCalendars
+                                          on academicCalendarDetail.AcademicCalendarId equals refAcademicCalendar.AcademicCalendarId
+                                          join course in _studentContext.Courses
+                                          on offeredCourseInTerm.CourseId equals course.Id
+                                          join department in _studentContext.Departments
+                                          on course.DepartmentId equals department.Id
+                                          where enrolledCourse.StudentId == id
+                                          select new { enrolledCourse.StudentId, course.Code, courseName = course.Name, departmentName = department.Name, academicCalendarDetail.Year, termName = refAcademicCalendar.Name, enrolledCourse.Marks })
+                        on student.Id equals studentEC.StudentId
+                        into CoursesEnrolledByStudents
+                       from coursesEnrolledByStudent in CoursesEnrolledByStudents.DefaultIfEmpty()
+                       where student.Id == id
+                       select new { student.Id, student.FirstName, student.LastName, coursesEnrolledByStudent.Code, coursesEnrolledByStudent.courseName, coursesEnrolledByStudent.departmentName, Year = coursesEnrolledByStudent.Year, Term = coursesEnrolledByStudent.termName, Marks = (double?)coursesEnrolledByStudent.Marks }).ToListAsync();
 
             StudentWithCoursesDtoGet studentWithCourseDetailsDto = null;
-            studentEntityWithCourses.ForEach(s => {
+            studentEntityWithCourses.ForEach(s =>
+            {
                 if (studentWithCourseDetailsDto == null) studentWithCourseDetailsDto = new StudentWithCoursesDtoGet();
-                if (!studentWithCourseDetailsDto.Id.Equals(s.Id))
-                    studentWithCourseDetailsDto = new StudentWithCoursesDtoGet { Id = s.Id, FirstName = s.FirstName, LastName = s.LastName };
+                if (!studentWithCourseDetailsDto.StudentId.Equals(s.Id))
+                    studentWithCourseDetailsDto = new StudentWithCoursesDtoGet { StudentId = s.Id, FirstName = s.FirstName, LastName = s.LastName };
                 if (s.Code != null)
                 {
-                    studentWithCourseDetailsDto.EnrolledCourses.Add(new EnrolledCourseDetailsDto { Code = s.Code, Name = s.courseName, 
-                        Department = s.departmentName, AcademicTerm = s.Term.Value, AcademicYear = s.Year.Value, Marks = s.Marks.Value });
+                    studentWithCourseDetailsDto.CoursesEnrolled.Add(new EnrolledCourseDetailsDto
+                    {
+                        Code = s.Code,
+                        Name = s.courseName,
+                        Department = s.departmentName,
+                        AcademicTerm = s.Term,
+                        AcademicYear = s.Year,
+                        Marks = s.Marks.Value
+                    });
                 }
             });
             return studentWithCourseDetailsDto;
+            //return null;
 
         }
     }
