@@ -16,7 +16,8 @@ namespace SRV.DL
         public Organization Organization { get; set; }
         public int DepartmentId { get; set; }
         public Department Department { get; set; }
-        public List<OfferedCoursesInTerm> OfferedCoursesInTerms { get; set; }
+        public List<OfferedCourses> OfferedCourses { get; set; }
+        public List<EnrolledCourse> EnrolledCourses { get; set; }
 
     }
 }

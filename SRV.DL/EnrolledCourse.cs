@@ -6,7 +6,10 @@
         public int StudentId { get; set; }
         public Student Student { get; set; }
         public double Marks { get; set; }
-        public OfferedCoursesInTerm OfferedCoursesInTerm { get; set; }
-        public int OfferedCoursesInTermId { get; set; }
+        public AcademicCalendarDetail AcademicCalendarDetail { get; set; }
+        public int AcademicCalendarDetailId { get; set; }
+        public Course Course { get; set; }
+        public int CourseId { get; set; }
+
     }
 }
