@@ -8,23 +8,24 @@ namespace SRV.Api.MappingProfiles
     {
         public EntityToDtoProfile()
         {
-            CreateMap<Student, StudentDtoForGet>();
+            CreateMap<Student, StudentDtoForGet>()
+                .ForMember(a => a.StudentId, b => b.MapFrom(c => c.Id));
             CreateMap<Student, StudentWithCoursesDtoGet>()
-                .ForMember(a => a.Id, b => b.MapFrom(c => c.Id))
+                .ForMember(a => a.StudentId, b => b.MapFrom(c => c.Id))
                 .ForMember(a => a.FirstName, b => b.MapFrom(c => c.FirstName))
                 .ForMember(a => a.LastName, b => b.MapFrom(c => c.LastName))
-                .ForMember(a => a.EnrolledCourses, b => b.MapFrom((c,a) => {
+                .ForMember(a => a.CoursesEnrolled, b => b.MapFrom((c,a) => {
                     var listOfEnrolledCourses = new List<EnrolledCourseDetailsDto>();
                     foreach (var enrolledCourse in c.EnrolledCourses)
                     {
                         listOfEnrolledCourses.Add(new EnrolledCourseDetailsDto
                         {
-                            Code = enrolledCourse.OfferedCoursesInTerm.Course.Code,
-                            Name = enrolledCourse.OfferedCoursesInTerm.Course.Name,
-                            Department = enrolledCourse.OfferedCoursesInTerm.Course.Department.Name,
+                            Code = enrolledCourse.Course.Code,
+                            Name = enrolledCourse.Course.Name,
+                            Department = enrolledCourse.Course.Department.Name,
                             Marks = enrolledCourse.Marks,
-                            AcademicTerm = enrolledCourse.OfferedCoursesInTerm.AcademicTermDetail.Term,
-                            AcademicYear = enrolledCourse.OfferedCoursesInTerm.AcademicTermDetail.Year
+                            AcademicTerm = enrolledCourse.AcademicCalendarDetail.RefAcademicCalendar.RefAcademicTerm.Name,
+                            AcademicYear = enrolledCourse.AcademicCalendarDetail.Year
                         });
                     }
                     return listOfEnrolledCourses;
