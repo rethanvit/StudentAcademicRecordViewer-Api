@@ -8,8 +8,6 @@ namespace SRV.Api.MappingProfiles
     {
         public EntityToDtoProfile()
         {
-            CreateMap<Student, StudentDtoForGet>()
-                .ForMember(a => a.StudentId, b => b.MapFrom(c => c.Id));
             CreateMap<Student, StudentWithCoursesDtoGet>()
                 .ForMember(a => a.StudentId, b => b.MapFrom(c => c.Id))
                 .ForMember(a => a.FirstName, b => b.MapFrom(c => c.FirstName))

@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SRV.Api.Models;
 using SRV.DL;
 
@@ -20,8 +18,20 @@ namespace SRV.Api.Services
 
         public async Task<StudentDtoForGet> GetStudentByIdAsync(int id)
         {
-            var studentEntity = await _studentContext.Students.Where(s => s.Id == id).SingleOrDefaultAsync();
-            return _mapper.Map<StudentDtoForGet>(studentEntity);
+            //var studentEntity = await _studentContext.Students.Where(s => s.Id == id).Include(s => s.Department).Include(s => s.Organization).SingleOrDefaultAsync();
+            var studentInfo = await _studentContext.Students.Join(_studentContext.Departments, s => s.Id, d => d.Id, (s, d) => new { s, d })
+                                                      .Join(_studentContext.Organizations, sd => sd.s.OrganizationId, o => o.Id, (sd, o) => new { sd, o })
+                                                      .Where(sdo => sdo.sd.s.Id == id)
+                                                      .Select(sdo => new  StudentDtoForGet { StudentId = sdo.sd.s.Id, 
+                                                                           FirstName = sdo.sd.s.FirstName, 
+                                                                           LastName = sdo.sd.s.LastName, 
+                                                                           Department = sdo.sd.d.Name, 
+                                                                           Organization = sdo.o.Name 
+                                                                         })
+                                                      .SingleOrDefaultAsync();
+                                                      
+
+            return studentInfo;
         }
 
         public async Task<StudentWithCoursesDtoGet> GetStudentAndCoursesByIdAsync(int id)
