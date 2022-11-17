@@ -1,8 +1,8 @@
 ﻿namespace SRV.DL
 {
-    public class OfferedCourses
+    public class OfferedCourse
     {
-        public int Id { get; set; }
+        public int OfferedCourseId { get; set; }
         public int CourseId { get; set; }
         public Course Course { get; set; }
         public int AcademicCalendarDetailId { get; set; }

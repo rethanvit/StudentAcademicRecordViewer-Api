@@ -22,6 +22,66 @@ namespace SRV.DL.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("SRV.DL.AcademicCalendar", b =>
+                {
+                    b.Property<int>("AcademicCalendarId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AcademicCalendarId"), 1L, 1);
+
+                    b.Property<int>("AcademicTermId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("AcademicCalendarId");
+
+                    b.HasIndex("AcademicTermId");
+
+                    b.ToTable("AcademicCalendars");
+
+                    b.HasData(
+                        new
+                        {
+                            AcademicCalendarId = 1,
+                            AcademicTermId = 1,
+                            Name = "Annual"
+                        },
+                        new
+                        {
+                            AcademicCalendarId = 2,
+                            AcademicTermId = 2,
+                            Name = "Spring"
+                        },
+                        new
+                        {
+                            AcademicCalendarId = 3,
+                            AcademicTermId = 2,
+                            Name = "Fall"
+                        },
+                        new
+                        {
+                            AcademicCalendarId = 4,
+                            AcademicTermId = 3,
+                            Name = "Spring"
+                        },
+                        new
+                        {
+                            AcademicCalendarId = 5,
+                            AcademicTermId = 3,
+                            Name = "Summer"
+                        },
+                        new
+                        {
+                            AcademicCalendarId = 6,
+                            AcademicTermId = 3,
+                            Name = "Fall"
+                        });
+                });
+
             modelBuilder.Entity("SRV.DL.AcademicCalendarDetail", b =>
                 {
                     b.Property<int>("AcademicCalendarDetailId")
@@ -101,11 +161,11 @@ namespace SRV.DL.Migrations
 
             modelBuilder.Entity("SRV.DL.Course", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("CourseId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CourseId"), 1L, 1);
 
                     b.Property<bool>("Active")
                         .HasColumnType("bit");
@@ -115,14 +175,11 @@ namespace SRV.DL.Migrations
                         .HasMaxLength(6)
                         .HasColumnType("nvarchar(6)");
 
-                    b.Property<int>("DepartmentId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("OrganizationId")
+                    b.Property<int>("ProgramId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")
@@ -131,45 +188,50 @@ namespace SRV.DL.Migrations
                     b.Property<DateTime>("StopDate")
                         .HasColumnType("smalldatetime");
 
-                    b.HasKey("Id");
+                    b.HasKey("CourseId");
 
-                    b.HasIndex("DepartmentId");
-
-                    b.HasIndex("OrganizationId");
+                    b.HasIndex("ProgramId");
 
                     b.ToTable("Courses");
 
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            CourseId = 1,
                             Active = true,
                             Code = "MBA",
-                            DepartmentId = 1,
-                            Name = "Masters in Business Administration",
-                            OrganizationId = 1,
+                            Name = "Business Administration 101",
+                            ProgramId = 1,
                             StartDate = new DateTime(2021, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             StopDate = new DateTime(2079, 6, 6, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = 2,
+                            CourseId = 2,
                             Active = true,
                             Code = "ACC",
-                            DepartmentId = 1,
-                            Name = "Masters in Accounts",
-                            OrganizationId = 1,
+                            Name = "Accounts 101",
+                            ProgramId = 1,
                             StartDate = new DateTime(2021, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             StopDate = new DateTime(2079, 6, 6, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = 3,
+                            CourseId = 3,
                             Active = true,
                             Code = "FIN",
-                            DepartmentId = 1,
-                            Name = "Masters in Finanace",
-                            OrganizationId = 1,
+                            Name = "Finance 101",
+                            ProgramId = 1,
+                            StartDate = new DateTime(2021, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StopDate = new DateTime(2079, 6, 6, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            CourseId = 4,
+                            Active = true,
+                            Code = "CSE",
+                            Name = "Data Structures",
+                            ProgramId = 2,
                             StartDate = new DateTime(2021, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             StopDate = new DateTime(2079, 6, 6, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
@@ -177,11 +239,11 @@ namespace SRV.DL.Migrations
 
             modelBuilder.Entity("SRV.DL.Department", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("DepartmentId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DepartmentId"), 1L, 1);
 
                     b.Property<int>("AcademicTermId")
                         .HasColumnType("int");
@@ -217,7 +279,7 @@ namespace SRV.DL.Migrations
                     b.Property<DateTime>("StopDate")
                         .HasColumnType("smalldatetime");
 
-                    b.HasKey("Id");
+                    b.HasKey("DepartmentId");
 
                     b.HasIndex("AcademicTermId");
 
@@ -228,7 +290,7 @@ namespace SRV.DL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            DepartmentId = 1,
                             AcademicTermId = 1,
                             Active = true,
                             Code = "BUS",
@@ -238,16 +300,29 @@ namespace SRV.DL.Migrations
                             OrganizationId = 1,
                             StartDate = new DateTime(2021, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             StopDate = new DateTime(2079, 6, 6, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            DepartmentId = 2,
+                            AcademicTermId = 1,
+                            Active = true,
+                            Code = "ENG",
+                            MaxMarks = 75,
+                            MinMarks = 40,
+                            Name = "School of Computer Science",
+                            OrganizationId = 2,
+                            StartDate = new DateTime(2021, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StopDate = new DateTime(2079, 6, 6, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
 
             modelBuilder.Entity("SRV.DL.EnrolledCourse", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("EnrolledCourseId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EnrolledCourseId"), 1L, 1);
 
                     b.Property<int>("AcademicCalendarDetailId")
                         .HasColumnType("int");
@@ -261,7 +336,7 @@ namespace SRV.DL.Migrations
                     b.Property<int>("StudentId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("EnrolledCourseId");
 
                     b.HasIndex("AcademicCalendarDetailId");
 
@@ -274,7 +349,7 @@ namespace SRV.DL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            EnrolledCourseId = 1,
                             AcademicCalendarDetailId = 1,
                             CourseId = 1,
                             Marks = 45.0,
@@ -282,7 +357,7 @@ namespace SRV.DL.Migrations
                         },
                         new
                         {
-                            Id = 2,
+                            EnrolledCourseId = 2,
                             AcademicCalendarDetailId = 2,
                             CourseId = 1,
                             Marks = 45.0,
@@ -290,7 +365,7 @@ namespace SRV.DL.Migrations
                         },
                         new
                         {
-                            Id = 3,
+                            EnrolledCourseId = 3,
                             AcademicCalendarDetailId = 2,
                             CourseId = 2,
                             Marks = 45.0,
@@ -298,13 +373,13 @@ namespace SRV.DL.Migrations
                         });
                 });
 
-            modelBuilder.Entity("SRV.DL.OfferedCourses", b =>
+            modelBuilder.Entity("SRV.DL.OfferedCourse", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("OfferedCourseId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OfferedCourseId"), 1L, 1);
 
                     b.Property<int>("AcademicCalendarDetailId")
                         .HasColumnType("int");
@@ -312,7 +387,7 @@ namespace SRV.DL.Migrations
                     b.Property<int>("CourseId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("OfferedCourseId");
 
                     b.HasIndex("AcademicCalendarDetailId");
 
@@ -323,19 +398,19 @@ namespace SRV.DL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            OfferedCourseId = 1,
                             AcademicCalendarDetailId = 1,
                             CourseId = 1
                         },
                         new
                         {
-                            Id = 2,
+                            OfferedCourseId = 2,
                             AcademicCalendarDetailId = 2,
                             CourseId = 2
                         },
                         new
                         {
-                            Id = 3,
+                            OfferedCourseId = 3,
                             AcademicCalendarDetailId = 2,
                             CourseId = 3
                         });
@@ -343,11 +418,11 @@ namespace SRV.DL.Migrations
 
             modelBuilder.Entity("SRV.DL.Organization", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("OrganizationId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrganizationId"), 1L, 1);
 
                     b.Property<bool>("Active")
                         .HasColumnType("bit");
@@ -362,78 +437,74 @@ namespace SRV.DL.Migrations
                     b.Property<DateTime>("StopDate")
                         .HasColumnType("smalldatetime");
 
-                    b.HasKey("Id");
+                    b.HasKey("OrganizationId");
 
                     b.ToTable("Organizations");
 
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            OrganizationId = 1,
                             Active = true,
-                            Name = "LLC School of Business",
+                            Name = "LLP School of Business",
+                            StartDate = new DateTime(2021, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StopDate = new DateTime(2079, 6, 6, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            OrganizationId = 2,
+                            Active = true,
+                            Name = "LLC School of Engineering",
                             StartDate = new DateTime(2021, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             StopDate = new DateTime(2079, 6, 6, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
 
-            modelBuilder.Entity("SRV.DL.RefAcademicCalendar", b =>
+            modelBuilder.Entity("SRV.DL.Program", b =>
                 {
-                    b.Property<int>("AcademicCalendarId")
+                    b.Property<int>("ProgramId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AcademicCalendarId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProgramId"), 1L, 1);
 
-                    b.Property<int>("AcademicTermId")
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("DepartmentId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("AcademicCalendarId");
+                    b.HasKey("ProgramId");
 
-                    b.HasIndex("AcademicTermId");
+                    b.HasIndex("DepartmentId");
 
-                    b.ToTable("RefAcademicCalendars");
+                    b.ToTable("Programs");
 
                     b.HasData(
                         new
                         {
-                            AcademicCalendarId = 1,
-                            AcademicTermId = 1,
-                            Name = "Annual"
+                            ProgramId = 1,
+                            Active = true,
+                            DepartmentId = 1,
+                            Name = "Masters in Business Administration"
                         },
                         new
                         {
-                            AcademicCalendarId = 2,
-                            AcademicTermId = 2,
-                            Name = "Spring"
+                            ProgramId = 2,
+                            Active = true,
+                            DepartmentId = 2,
+                            Name = "Masters in Computer Science"
                         },
                         new
                         {
-                            AcademicCalendarId = 3,
-                            AcademicTermId = 2,
-                            Name = "Fall"
-                        },
-                        new
-                        {
-                            AcademicCalendarId = 4,
-                            AcademicTermId = 3,
-                            Name = "Spring"
-                        },
-                        new
-                        {
-                            AcademicCalendarId = 5,
-                            AcademicTermId = 3,
-                            Name = "Summer"
-                        },
-                        new
-                        {
-                            AcademicCalendarId = 6,
-                            AcademicTermId = 3,
-                            Name = "Fall"
+                            ProgramId = 3,
+                            Active = true,
+                            DepartmentId = 2,
+                            Name = "Bachelors in Computer Science"
                         });
                 });
 
@@ -485,14 +556,11 @@ namespace SRV.DL.Migrations
 
             modelBuilder.Entity("SRV.DL.Student", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("StudentId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("DepartmentId")
-                        .HasColumnType("int");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StudentId"), 1L, 1);
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -502,7 +570,7 @@ namespace SRV.DL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("OrganizationId")
+                    b.Property<int>("ProgramId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")
@@ -511,40 +579,47 @@ namespace SRV.DL.Migrations
                     b.Property<DateTime>("StopDate")
                         .HasColumnType("smalldatetime");
 
-                    b.HasKey("Id");
+                    b.HasKey("StudentId");
 
-                    b.HasIndex("DepartmentId");
-
-                    b.HasIndex("OrganizationId");
+                    b.HasIndex("ProgramId");
 
                     b.ToTable("Students");
 
                     b.HasData(
                         new
                         {
-                            Id = 1,
-                            DepartmentId = 1,
+                            StudentId = 1,
                             FirstName = "Johnny",
                             LastName = "Patty",
-                            OrganizationId = 1,
+                            ProgramId = 1,
                             StartDate = new DateTime(2021, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             StopDate = new DateTime(2079, 6, 6, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = 2,
-                            DepartmentId = 1,
+                            StudentId = 2,
                             FirstName = "Alia",
                             LastName = "Thomson",
-                            OrganizationId = 1,
+                            ProgramId = 2,
                             StartDate = new DateTime(2021, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             StopDate = new DateTime(2079, 6, 6, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
 
+            modelBuilder.Entity("SRV.DL.AcademicCalendar", b =>
+                {
+                    b.HasOne("SRV.DL.RefAcademicTerm", "RefAcademicTerm")
+                        .WithMany("AcademicCalendars")
+                        .HasForeignKey("AcademicTermId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("RefAcademicTerm");
+                });
+
             modelBuilder.Entity("SRV.DL.AcademicCalendarDetail", b =>
                 {
-                    b.HasOne("SRV.DL.RefAcademicCalendar", "RefAcademicCalendar")
+                    b.HasOne("SRV.DL.AcademicCalendar", "RefAcademicCalendar")
                         .WithMany("AcademicCalendarDetails")
                         .HasForeignKey("AcademicCalendarId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -555,21 +630,13 @@ namespace SRV.DL.Migrations
 
             modelBuilder.Entity("SRV.DL.Course", b =>
                 {
-                    b.HasOne("SRV.DL.Department", "Department")
+                    b.HasOne("SRV.DL.Program", "Program")
                         .WithMany("Courses")
-                        .HasForeignKey("DepartmentId")
+                        .HasForeignKey("ProgramId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("SRV.DL.Organization", "Organization")
-                        .WithMany("Courses")
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Department");
-
-                    b.Navigation("Organization");
+                    b.Navigation("Program");
                 });
 
             modelBuilder.Entity("SRV.DL.Department", b =>
@@ -618,7 +685,7 @@ namespace SRV.DL.Migrations
                     b.Navigation("Student");
                 });
 
-            modelBuilder.Entity("SRV.DL.OfferedCourses", b =>
+            modelBuilder.Entity("SRV.DL.OfferedCourse", b =>
                 {
                     b.HasOne("SRV.DL.AcademicCalendarDetail", "AcademicCalendarDetail")
                         .WithMany("OfferedCourses")
@@ -637,34 +704,31 @@ namespace SRV.DL.Migrations
                     b.Navigation("Course");
                 });
 
-            modelBuilder.Entity("SRV.DL.RefAcademicCalendar", b =>
-                {
-                    b.HasOne("SRV.DL.RefAcademicTerm", "RefAcademicTerm")
-                        .WithMany("RefAcademicCalendars")
-                        .HasForeignKey("AcademicTermId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("RefAcademicTerm");
-                });
-
-            modelBuilder.Entity("SRV.DL.Student", b =>
+            modelBuilder.Entity("SRV.DL.Program", b =>
                 {
                     b.HasOne("SRV.DL.Department", "Department")
-                        .WithMany("Students")
+                        .WithMany("Programs")
                         .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("SRV.DL.Organization", "Organization")
+                    b.Navigation("Department");
+                });
+
+            modelBuilder.Entity("SRV.DL.Student", b =>
+                {
+                    b.HasOne("SRV.DL.Program", "Program")
                         .WithMany("Students")
-                        .HasForeignKey("OrganizationId")
+                        .HasForeignKey("ProgramId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Department");
+                    b.Navigation("Program");
+                });
 
-                    b.Navigation("Organization");
+            modelBuilder.Entity("SRV.DL.AcademicCalendar", b =>
+                {
+                    b.Navigation("AcademicCalendarDetails");
                 });
 
             modelBuilder.Entity("SRV.DL.AcademicCalendarDetail", b =>
@@ -683,30 +747,26 @@ namespace SRV.DL.Migrations
 
             modelBuilder.Entity("SRV.DL.Department", b =>
                 {
-                    b.Navigation("Courses");
-
-                    b.Navigation("Students");
+                    b.Navigation("Programs");
                 });
 
             modelBuilder.Entity("SRV.DL.Organization", b =>
                 {
-                    b.Navigation("Courses");
-
                     b.Navigation("Departments");
+                });
+
+            modelBuilder.Entity("SRV.DL.Program", b =>
+                {
+                    b.Navigation("Courses");
 
                     b.Navigation("Students");
                 });
 
-            modelBuilder.Entity("SRV.DL.RefAcademicCalendar", b =>
-                {
-                    b.Navigation("AcademicCalendarDetails");
-                });
-
             modelBuilder.Entity("SRV.DL.RefAcademicTerm", b =>
                 {
-                    b.Navigation("Departments");
+                    b.Navigation("AcademicCalendars");
 
-                    b.Navigation("RefAcademicCalendars");
+                    b.Navigation("Departments");
                 });
 
             modelBuilder.Entity("SRV.DL.Student", b =>

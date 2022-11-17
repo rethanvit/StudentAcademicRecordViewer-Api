@@ -15,11 +15,11 @@ namespace SRV.Api.Controllers
             _studentRepository = studentRepository;
         }
 
-        [HttpGet("{id:int}")]
+        [HttpGet("{organizationId:int}/{studentId:int}")]
         //[Route("courses/test")]
-        public async Task<ActionResult<StudentDtoForGet>> Get(int id)
+        public async Task<ActionResult<StudentDtoForGet>> Get(int organizationId, int studentId)
         {
-            var student = await _studentRepository.GetStudentByIdAsync(id);
+            var student = await _studentRepository.GetStudentByIdAsync(organizationId, studentId);
 
             if(student == null)
                 return NotFound("Provided student doesn't exist.");
@@ -27,10 +27,10 @@ namespace SRV.Api.Controllers
             return Ok(student);
         }
 
-        [HttpGet("{id:int}/withCourses")]
-        public async Task<ActionResult<StudentWithCoursesDtoGet>> GetStudentWithCourses(int id)
+        [HttpGet("{organizationId:int}/{studentId:int}/withCourses")]
+        public async Task<ActionResult<StudentWithCoursesDtoGet>> GetStudentWithCourses(int organizationId, int studentId)
         {
-            var student = await _studentRepository.GetStudentAndCoursesByIdAsync(id);
+            var student = await _studentRepository.GetStudentAndCoursesByIdAsync(organizationId, studentId);
 
             if (student == null)
                 return NotFound("Provided student doesn't exist.");

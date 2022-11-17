@@ -4,6 +4,6 @@ namespace SRV.Api.Services
 {
     public interface IStudentService
     {
-        Task<StudentDtoForGet> GetStudentByIdAsync(int id);
+        Task<StudentDtoForGet> GetStudentByIdAsync(int organizationId, int studentId);
     }
 }

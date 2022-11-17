@@ -1,6 +1,6 @@
 ﻿namespace SRV.DL
 {
-    public class RefAcademicCalendar
+    public class AcademicCalendar
     {
         public int AcademicCalendarId { get; set; }
         public string Name { get; set; }

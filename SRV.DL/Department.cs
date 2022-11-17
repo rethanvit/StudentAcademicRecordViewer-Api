@@ -4,7 +4,7 @@ namespace SRV.DL
 {
     public class Department
     {
-        public int Id { get; set; }
+        public int DepartmentId { get; set; }
 
         [StringLength(6)]
         public string Code { get; set; }
@@ -16,11 +16,8 @@ namespace SRV.DL
         public int MaxMarks { get; set; }
         public int MinMarks { get; set; }
         public bool Active { get; set; }
-
         public Organization Organization { get; set; }
         public int OrganizationId { get; set; }
-        public List<Course> Courses { get; set; }
-
-        public List<Student> Students { get; set; }
+        public List<Program> Programs { get; set; }
     }
 }

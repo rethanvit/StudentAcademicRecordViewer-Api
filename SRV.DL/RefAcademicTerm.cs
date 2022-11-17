@@ -7,6 +7,6 @@
         public int Terms { get; set; }
         public bool Active { get; set; }
         public List<Department> Departments { get; set; }
-        public List<RefAcademicCalendar> RefAcademicCalendars { get; set; }
+        public List<AcademicCalendar> AcademicCalendars { get; set; }
     }
 }

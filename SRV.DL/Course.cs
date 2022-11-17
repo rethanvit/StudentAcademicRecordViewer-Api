@@ -4,7 +4,7 @@ namespace SRV.DL
 {
     public class Course
     {
-        public int Id { get; set; }
+        public int CourseId { get; set; }
 
         [StringLength(6)]
         public string Code { get; set; }
@@ -12,11 +12,9 @@ namespace SRV.DL
         public DateTime StartDate { get; set; }
         public DateTime StopDate { get; set; }
         public bool Active { get; set; }
-        public int OrganizationId { get; set; }
-        public Organization Organization { get; set; }
-        public int DepartmentId { get; set; }
-        public Department Department { get; set; }
-        public List<OfferedCourses> OfferedCourses { get; set; }
+        public int ProgramId { get; set; }
+        public Program Program { get; set; }
+        public List<OfferedCourse> OfferedCourses { get; set; }
         public List<EnrolledCourse> EnrolledCourses { get; set; }
 
     }

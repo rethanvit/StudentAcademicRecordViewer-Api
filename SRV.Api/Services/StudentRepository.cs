@@ -16,25 +16,26 @@ namespace SRV.Api.Services
             _mapper = mapper;
         }
 
-        public async Task<StudentDtoForGet> GetStudentByIdAsync(int id)
+        public async Task<StudentDtoForGet> GetStudentByIdAsync(int organizationId, int id)
         {
             //var studentEntity = await _studentContext.Students.Where(s => s.Id == id).Include(s => s.Department).Include(s => s.Organization).SingleOrDefaultAsync();
-            var studentInfo = await _studentContext.Students.Join(_studentContext.Departments, s => s.Id, d => d.Id, (s, d) => new { s, d })
-                                                      .Join(_studentContext.Organizations, sd => sd.s.OrganizationId, o => o.Id, (sd, o) => new { sd, o })
-                                                      .Where(sdo => sdo.sd.s.Id == id)
-                                                      .Select(sdo => new  StudentDtoForGet { StudentId = sdo.sd.s.Id, 
-                                                                           FirstName = sdo.sd.s.FirstName, 
-                                                                           LastName = sdo.sd.s.LastName, 
-                                                                           Department = sdo.sd.d.Name, 
-                                                                           Organization = sdo.o.Name 
-                                                                         })
-                                                      .SingleOrDefaultAsync();
+            var studentInfo = await _studentContext.Students.Join(_studentContext.Programs, s => s.ProgramId, p => p.ProgramId, (s, p) => new { s, p })
+                                                            .Join(_studentContext.Departments, sp => sp.p.DepartmentId, d => d.DepartmentId, (sp, d) => new { sp, d })
+                                                            .Join(_studentContext.Organizations, spd => spd.d.OrganizationId, o => o.OrganizationId, (spd, o) => new {spd, o } )
+                                                            .Where(spdo => spdo.o.OrganizationId == organizationId && spdo.spd.sp.s.StudentId == id)
+                                                            .Select(spdo => new  StudentDtoForGet { StudentId = spdo.spd.sp.s.StudentId, 
+                                                                                                   FirstName = spdo.spd.sp.s.FirstName, 
+                                                                                                   LastName = spdo.spd.sp.s.LastName, 
+                                                                                                   Department = spdo.spd.d.Name,
+                                                                                                   Program = spdo.spd.sp.p.Name,
+                                                                                                   Organization = spdo.o.Name 
+                                                                                                 }).SingleOrDefaultAsync();
                                                       
 
             return studentInfo;
         }
 
-        public async Task<StudentWithCoursesDtoGet> GetStudentAndCoursesByIdAsync(int id)
+        public async Task<StudentWithCoursesDtoGet> GetStudentAndCoursesByIdAsync(int organizationId, int id)
         {
             //var studentWithCourses = await _studentContext.Students.Include(s => s.EnrolledCourses).ThenInclude(c => c.OfferedCoursesInTerm).ThenInclude(d => d.Course)
             //                                                       .Include(s => s.EnrolledCourses).ThenInclude(c => c.OfferedCoursesInTerm).ThenInclude(d => d.AcademicTermDetail)
@@ -74,31 +75,37 @@ namespace SRV.Api.Services
 
             var studentEntityWithCourses =
                 await (from student in _studentContext.Students
+                       join program in _studentContext.Programs
+                       on student.ProgramId equals program.ProgramId
+                       join department in _studentContext.Departments
+                       on program.DepartmentId equals department.DepartmentId
+                       join organization in _studentContext.Organizations
+                       on department.OrganizationId equals organization.OrganizationId
+                       where student.StudentId == id && department.OrganizationId == organizationId
                        join studentEC in (from enrolledCourse in _studentContext.EnrolledCourses
-                                          join offeredCourseInTerm in _studentContext.OfferedCourses
-                                          on enrolledCourse.AcademicCalendarDetailId equals offeredCourseInTerm.AcademicCalendarDetailId
                                           join academicCalendarDetail in _studentContext.AcademicCalendarDetails
                                           on enrolledCourse.AcademicCalendarDetailId equals academicCalendarDetail.AcademicCalendarDetailId
-                                          join refAcademicCalendar in _studentContext.RefAcademicCalendars
+                                          join refAcademicCalendar in _studentContext.AcademicCalendars
                                           on academicCalendarDetail.AcademicCalendarId equals refAcademicCalendar.AcademicCalendarId
                                           join course in _studentContext.Courses
-                                          on offeredCourseInTerm.CourseId equals course.Id
+                                          on enrolledCourse.CourseId equals course.CourseId
+                                          join program in _studentContext.Programs
+                                          on course.ProgramId equals program.ProgramId
                                           join department in _studentContext.Departments
-                                          on course.DepartmentId equals department.Id
+                                          on program.DepartmentId equals department.DepartmentId
                                           where enrolledCourse.StudentId == id
-                                          select new { enrolledCourse.StudentId, course.Code, courseName = course.Name, departmentName = department.Name, academicCalendarDetail.Year, termName = refAcademicCalendar.Name, enrolledCourse.Marks })
-                        on student.Id equals studentEC.StudentId
+                                          select new { enrolledCourse.StudentId, departmentName = department.Name, course.Code, courseName = course.Name, academicCalendarDetail.Year, termName = refAcademicCalendar.Name, enrolledCourse.Marks })
+                        on student.StudentId equals studentEC.StudentId
                         into CoursesEnrolledByStudents
                        from coursesEnrolledByStudent in CoursesEnrolledByStudents.DefaultIfEmpty()
-                       where student.Id == id
-                       select new { student.Id, student.FirstName, student.LastName, coursesEnrolledByStudent.Code, coursesEnrolledByStudent.courseName, coursesEnrolledByStudent.departmentName, Year = coursesEnrolledByStudent.Year, Term = coursesEnrolledByStudent.termName, Marks = (double?)coursesEnrolledByStudent.Marks }).ToListAsync();
+                       select new { student.StudentId, student.FirstName, student.LastName, coursesEnrolledByStudent.Code, coursesEnrolledByStudent.courseName, coursesEnrolledByStudent.departmentName, Year = coursesEnrolledByStudent.Year, Term = coursesEnrolledByStudent.termName, Marks = (double?)coursesEnrolledByStudent.Marks }).ToListAsync();
 
             StudentWithCoursesDtoGet studentWithCourseDetailsDto = null;
             studentEntityWithCourses.ForEach(s =>
             {
                 if (studentWithCourseDetailsDto == null) studentWithCourseDetailsDto = new StudentWithCoursesDtoGet();
-                if (!studentWithCourseDetailsDto.StudentId.Equals(s.Id))
-                    studentWithCourseDetailsDto = new StudentWithCoursesDtoGet { StudentId = s.Id, FirstName = s.FirstName, LastName = s.LastName };
+                if (!studentWithCourseDetailsDto.StudentId.Equals(s.StudentId))
+                    studentWithCourseDetailsDto = new StudentWithCoursesDtoGet { StudentId = s.StudentId, FirstName = s.FirstName, LastName = s.LastName };
                 if (s.Code != null)
                 {
                     studentWithCourseDetailsDto.CoursesEnrolled.Add(new EnrolledCourseDetailsDto
