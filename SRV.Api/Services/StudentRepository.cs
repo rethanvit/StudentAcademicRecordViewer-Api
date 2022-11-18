@@ -25,9 +25,11 @@ namespace SRV.Api.Services
                                                             .Where(spdo => spdo.o.OrganizationId == organizationId && spdo.spd.sp.s.StudentId == id)
                                                             .Select(spdo => new  StudentDtoForGet { StudentId = spdo.spd.sp.s.StudentId, 
                                                                                                    FirstName = spdo.spd.sp.s.FirstName, 
-                                                                                                   LastName = spdo.spd.sp.s.LastName, 
+                                                                                                   LastName = spdo.spd.sp.s.LastName,
+                                                                                                   DepartmentId = spdo.spd.d.DepartmentId,
                                                                                                    Department = spdo.spd.d.Name,
                                                                                                    Program = spdo.spd.sp.p.Name,
+                                                                                                   OrganizationId = spdo.o.OrganizationId,
                                                                                                    Organization = spdo.o.Name 
                                                                                                  }).SingleOrDefaultAsync();
                                                       
@@ -94,11 +96,11 @@ namespace SRV.Api.Services
                                           join department in _studentContext.Departments
                                           on program.DepartmentId equals department.DepartmentId
                                           where enrolledCourse.StudentId == id
-                                          select new { enrolledCourse.StudentId, departmentName = department.Name, course.Code, courseName = course.Name, academicCalendarDetail.Year, termName = refAcademicCalendar.Name, enrolledCourse.Marks })
+                                          select new { enrolledCourse.StudentId, enrolledCourse.EnrolledCourseId, departmentName = department.Name, course.Code, courseName = course.Name, academicCalendarDetail.Year, termName = refAcademicCalendar.Name, enrolledCourse.Marks })
                         on student.StudentId equals studentEC.StudentId
                         into CoursesEnrolledByStudents
                        from coursesEnrolledByStudent in CoursesEnrolledByStudents.DefaultIfEmpty()
-                       select new { student.StudentId, student.FirstName, student.LastName, coursesEnrolledByStudent.Code, coursesEnrolledByStudent.courseName, coursesEnrolledByStudent.departmentName, Year = coursesEnrolledByStudent.Year, Term = coursesEnrolledByStudent.termName, Marks = (double?)coursesEnrolledByStudent.Marks }).ToListAsync();
+                       select new { student.StudentId, student.FirstName, student.LastName, coursesEnrolledByStudent.EnrolledCourseId, coursesEnrolledByStudent.Code, coursesEnrolledByStudent.courseName, coursesEnrolledByStudent.departmentName, Year = coursesEnrolledByStudent.Year, Term = coursesEnrolledByStudent.termName, Marks = (double?)coursesEnrolledByStudent.Marks }).ToListAsync();
 
             StudentWithCoursesDtoGet studentWithCourseDetailsDto = null;
             studentEntityWithCourses.ForEach(s =>
@@ -110,6 +112,7 @@ namespace SRV.Api.Services
                 {
                     studentWithCourseDetailsDto.CoursesEnrolled.Add(new EnrolledCourseDetailsDto
                     {
+                        EnrolledCourseId = s.EnrolledCourseId,
                         Code = s.Code,
                         Name = s.courseName,
                         Department = s.departmentName,
@@ -123,5 +126,17 @@ namespace SRV.Api.Services
             //return null;
 
         }
+
+        public async Task DeleteCoursesEnrolled(int organizationId, int studentId, int enrolledCourseId)
+        {
+            var courseDeleted = await _studentContext.EnrolledCourses.Where(ec => ec.EnrolledCourseId == enrolledCourseId).SingleOrDefaultAsync<EnrolledCourse>();
+            
+            if(courseDeleted != null)
+            {
+                _studentContext.EnrolledCourses.Remove(courseDeleted);
+                await _studentContext.SaveChangesAsync();
+            }
+        }
+
     }
 }

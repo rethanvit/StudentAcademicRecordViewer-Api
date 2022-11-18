@@ -11,6 +11,7 @@
 
     public class EnrolledCourseDetailsDto
     {
+        public int EnrolledCourseId { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
         public string Department { get; set; }

@@ -17,7 +17,7 @@ namespace SRV.Api.Services
         public async Task<StudentDtoForGet> GetStudentByIdAsync(int organizationId, int studentId)
         {
             var studentDto = await _studentRepository.GetStudentByIdAsync(organizationId, studentId);
-            return _mapper.Map<StudentDtoForGet>(studentDto);
+            return studentDto;
         }
     }
 }

@@ -16,7 +16,6 @@ namespace SRV.Api.Controllers
         }
 
         [HttpGet("{organizationId:int}/{studentId:int}")]
-        //[Route("courses/test")]
         public async Task<ActionResult<StudentDtoForGet>> Get(int organizationId, int studentId)
         {
             var student = await _studentRepository.GetStudentByIdAsync(organizationId, studentId);
@@ -36,6 +35,14 @@ namespace SRV.Api.Controllers
                 return NotFound("Provided student doesn't exist.");
 
             return Ok(student);
+        }
+
+        [HttpDelete("{organizationId:int}/{studentId:int}/EnrolledCourse/{enrolledCourseId:int}")]
+        public async Task<IActionResult> DeleteEnrolledCourse(int organizationId, int studentId, int enrolledCourseId)
+        {
+            await _studentRepository.DeleteCoursesEnrolled(organizationId, studentId, enrolledCourseId);
+            return Ok();
+
         }
 
     }
