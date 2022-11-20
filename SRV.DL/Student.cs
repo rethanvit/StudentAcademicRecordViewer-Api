@@ -9,6 +9,8 @@
         public DateTime StopDate { get; set; }
         public int ProgramId { get; set; }
         public Program Program { get; set; }
+        public int AcademicCalendarDetailId { get; set; }
+        public AcademicCalendarDetail AcademicCalendarDetail { get; set; }
         public List<EnrolledCourse> EnrolledCourses { get; set; }
     }
 }

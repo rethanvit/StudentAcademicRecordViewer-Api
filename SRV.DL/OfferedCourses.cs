@@ -7,6 +7,7 @@
         public Course Course { get; set; }
         public int AcademicCalendarDetailId { get; set; }
         public AcademicCalendarDetail AcademicCalendarDetail { get; set; }
+        public EnrolledCourse EnrolledCourse { get; set; }
 
     }
 }

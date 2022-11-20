@@ -11,8 +11,6 @@ namespace SRV.DL
         public string Name { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime StopDate { get; set; }
-        public int AcademicTermId { get; set; }
-        public RefAcademicTerm RefAcademicTerm { get; set; }    
         public int MaxMarks { get; set; }
         public int MinMarks { get; set; }
         public bool Active { get; set; }

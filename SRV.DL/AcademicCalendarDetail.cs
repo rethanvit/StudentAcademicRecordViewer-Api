@@ -8,8 +8,8 @@
         public DateTime StopDate { get; set; }
         public AcademicCalendar RefAcademicCalendar { get; set; }
         public int AcademicCalendarId { get; set; }
-        public List<EnrolledCourse> EnrolledCourses { get; set; }
         public List<OfferedCourse> OfferedCourses { get; set; }
+        public List<Student> Students { get; set; }
 
     }
 }

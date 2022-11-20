@@ -8,6 +8,7 @@ namespace SRV.DL
 
         [StringLength(6)]
         public string Code { get; set; }
+        public int Level { get; set; }
         public string Name { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime StopDate { get; set; }
@@ -15,7 +16,6 @@ namespace SRV.DL
         public int ProgramId { get; set; }
         public Program Program { get; set; }
         public List<OfferedCourse> OfferedCourses { get; set; }
-        public List<EnrolledCourse> EnrolledCourses { get; set; }
 
     }
 }

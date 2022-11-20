@@ -85,12 +85,14 @@ namespace SRV.Api.Services
                        on department.OrganizationId equals organization.OrganizationId
                        where student.StudentId == id && department.OrganizationId == organizationId
                        join studentEC in (from enrolledCourse in _studentContext.EnrolledCourses
+                                          join offeredCourse in _studentContext.OfferedCourses
+                                          on enrolledCourse.OfferedCourseId equals offeredCourse.OfferedCourseId
                                           join academicCalendarDetail in _studentContext.AcademicCalendarDetails
-                                          on enrolledCourse.AcademicCalendarDetailId equals academicCalendarDetail.AcademicCalendarDetailId
+                                          on offeredCourse.AcademicCalendarDetailId equals academicCalendarDetail.AcademicCalendarDetailId
                                           join refAcademicCalendar in _studentContext.AcademicCalendars
                                           on academicCalendarDetail.AcademicCalendarId equals refAcademicCalendar.AcademicCalendarId
                                           join course in _studentContext.Courses
-                                          on enrolledCourse.CourseId equals course.CourseId
+                                          on offeredCourse.CourseId equals course.CourseId
                                           join program in _studentContext.Programs
                                           on course.ProgramId equals program.ProgramId
                                           join department in _studentContext.Departments

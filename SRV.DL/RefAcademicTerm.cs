@@ -6,7 +6,7 @@
         public string Name { get; set; }
         public int Terms { get; set; }
         public bool Active { get; set; }
-        public List<Department> Departments { get; set; }
         public List<AcademicCalendar> AcademicCalendars { get; set; }
+        public List<Program> Programs { get; set; }
     }
 }
