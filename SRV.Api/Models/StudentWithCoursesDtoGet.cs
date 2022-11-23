@@ -11,10 +11,10 @@
 
     public class EnrolledCourseDetailsDto
     {
-        public int EnrolledCourseId { get; set; }
-        public string Code { get; set; }
-        public string Name { get; set; }
-        public string Department { get; set; }
+        public string CourseCode { get; set; }
+        public int CourseLevel { get; set; }
+        public string CourseName { get; set; }
+        public string DepartmentName { get; set; }
         public int AcademicYear { get; set; }
         public string AcademicTerm { get; set; }
         public double Marks { get; set; }

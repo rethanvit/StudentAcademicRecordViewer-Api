@@ -18,8 +18,7 @@ namespace SRV.Api.Controllers
         [HttpGet("{organizationId:int}/{studentId:int}")]
         public async Task<ActionResult<StudentDtoForGet>> Get(int organizationId, int studentId)
         {
-            var student = await _studentRepository.GetStudentByIdAsync(organizationId, studentId);
-
+            var student = await _studentRepository.GetStudentByIdAsync(studentId);
             if(student == null)
                 return NotFound("Provided student doesn't exist.");
 
@@ -29,7 +28,7 @@ namespace SRV.Api.Controllers
         [HttpGet("{organizationId:int}/{studentId:int}/withCourses")]
         public async Task<ActionResult<StudentWithCoursesDtoGet>> GetStudentWithCourses(int organizationId, int studentId)
         {
-            var student = await _studentRepository.GetStudentAndCoursesByIdAsync(organizationId, studentId);
+            var student = await _studentRepository.GetStudentAndCoursesByIdAsync(studentId);
 
             if (student == null)
                 return NotFound("Provided student doesn't exist.");
@@ -37,10 +36,18 @@ namespace SRV.Api.Controllers
             return Ok(student);
         }
 
-        [HttpDelete("{organizationId:int}/{studentId:int}/EnrolledCourse/{enrolledCourseId:int}")]
-        public async Task<IActionResult> DeleteEnrolledCourse(int organizationId, int studentId, int enrolledCourseId)
+        [HttpDelete("{organizationId:int}/{studentId:int}/EnrolledCourse")]
+        public async Task<IActionResult> DeleteEnrolledCourse([FromBody]StudentCourseArgs courseArgs)
         {
-            await _studentRepository.DeleteCoursesEnrolled(organizationId, studentId, enrolledCourseId);
+            await _studentRepository.DeleteCoursesEnrolled(courseArgs);
+            return Ok();
+
+        }
+
+        [HttpPost("{organizationId:int}/{studentId:int}/EnrolledCourse/{courseCode: string}/{courseLevel:int}")]
+        public async Task<IActionResult> GetEditEnrolledCourseOptions(int studentId, int courseLevel, string courseCode)
+        {
+            await _studentRepository.GetAademicYearsAndAcademicTermsACourseIsOffered(studentId, courseLevel, courseCode);
             return Ok();
 
         }
