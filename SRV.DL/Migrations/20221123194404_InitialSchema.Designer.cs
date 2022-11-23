@@ -12,7 +12,7 @@ using SRV.DL;
 namespace SRV.DL.Migrations
 {
     [DbContext(typeof(StudentContext))]
-    [Migration("20221120005816_InitialSchema")]
+    [Migration("20221123194404_InitialSchema")]
     partial class InitialSchema
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -107,6 +107,8 @@ namespace SRV.DL.Migrations
 
                     b.HasKey("CourseId");
 
+                    b.HasAlternateKey("Code", "Level");
+
                     b.HasIndex("ProgramId");
 
                     b.ToTable("Courses");
@@ -140,7 +142,7 @@ namespace SRV.DL.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("OrganizationId")
                         .HasColumnType("int");
@@ -153,6 +155,8 @@ namespace SRV.DL.Migrations
 
                     b.HasKey("DepartmentId");
 
+                    b.HasAlternateKey("Code", "Name");
+
                     b.HasIndex("OrganizationId");
 
                     b.ToTable("Departments");
@@ -160,50 +164,36 @@ namespace SRV.DL.Migrations
 
             modelBuilder.Entity("SRV.DL.EnrolledCourse", b =>
                 {
-                    b.Property<int>("EnrolledCourseId")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("StudentId")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EnrolledCourseId"), 1L, 1);
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AcademicCalendarDetailId")
+                        .HasColumnType("int");
 
                     b.Property<double>("Marks")
                         .HasColumnType("float");
 
-                    b.Property<int>("OfferedCourseId")
-                        .HasColumnType("int");
+                    b.HasKey("StudentId", "CourseId", "AcademicCalendarDetailId");
 
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
-
-                    b.HasKey("EnrolledCourseId");
-
-                    b.HasAlternateKey("StudentId", "OfferedCourseId");
-
-                    b.HasIndex("OfferedCourseId")
-                        .IsUnique();
+                    b.HasIndex("CourseId", "AcademicCalendarDetailId");
 
                     b.ToTable("EnrolledCourses");
                 });
 
             modelBuilder.Entity("SRV.DL.OfferedCourse", b =>
                 {
-                    b.Property<int>("OfferedCourseId")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("CourseId")
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OfferedCourseId"), 1L, 1);
 
                     b.Property<int>("AcademicCalendarDetailId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
-
-                    b.HasKey("OfferedCourseId");
+                    b.HasKey("CourseId", "AcademicCalendarDetailId");
 
                     b.HasIndex("AcademicCalendarDetailId");
-
-                    b.HasIndex("CourseId");
 
                     b.ToTable("OfferedCourses");
                 });
@@ -250,7 +240,7 @@ namespace SRV.DL.Migrations
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("DepartmentId")
                         .HasColumnType("int");
@@ -260,6 +250,8 @@ namespace SRV.DL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ProgramId");
+
+                    b.HasAlternateKey("Code");
 
                     b.HasIndex("AcademicTermId");
 
@@ -299,7 +291,7 @@ namespace SRV.DL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StudentId"), 1L, 1);
 
-                    b.Property<int>("AcademicCalendarDetailId")
+                    b.Property<int>("AcademicCalendarDetailStartId")
                         .HasColumnType("int");
 
                     b.Property<string>("FirstName")
@@ -321,7 +313,7 @@ namespace SRV.DL.Migrations
 
                     b.HasKey("StudentId");
 
-                    b.HasIndex("AcademicCalendarDetailId");
+                    b.HasIndex("AcademicCalendarDetailStartId");
 
                     b.HasIndex("ProgramId");
 
@@ -374,15 +366,15 @@ namespace SRV.DL.Migrations
 
             modelBuilder.Entity("SRV.DL.EnrolledCourse", b =>
                 {
-                    b.HasOne("SRV.DL.OfferedCourse", "OfferedCourse")
-                        .WithOne("EnrolledCourse")
-                        .HasForeignKey("SRV.DL.EnrolledCourse", "OfferedCourseId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("SRV.DL.Student", "Student")
                         .WithMany("EnrolledCourses")
                         .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("SRV.DL.OfferedCourse", "OfferedCourse")
+                        .WithMany("EnrolledCourses")
+                        .HasForeignKey("CourseId", "AcademicCalendarDetailId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -415,7 +407,7 @@ namespace SRV.DL.Migrations
                     b.HasOne("SRV.DL.RefAcademicTerm", "RefAcademicTerm")
                         .WithMany("Programs")
                         .HasForeignKey("AcademicTermId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("SRV.DL.Department", "Department")
@@ -433,8 +425,8 @@ namespace SRV.DL.Migrations
                 {
                     b.HasOne("SRV.DL.AcademicCalendarDetail", "AcademicCalendarDetail")
                         .WithMany("Students")
-                        .HasForeignKey("AcademicCalendarDetailId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("AcademicCalendarDetailStartId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("SRV.DL.Program", "Program")
@@ -472,8 +464,7 @@ namespace SRV.DL.Migrations
 
             modelBuilder.Entity("SRV.DL.OfferedCourse", b =>
                 {
-                    b.Navigation("EnrolledCourse")
-                        .IsRequired();
+                    b.Navigation("EnrolledCourses");
                 });
 
             modelBuilder.Entity("SRV.DL.Organization", b =>

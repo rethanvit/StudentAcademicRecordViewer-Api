@@ -9,7 +9,7 @@
         public DateTime StopDate { get; set; }
         public int ProgramId { get; set; }
         public Program Program { get; set; }
-        public int AcademicCalendarDetailId { get; set; }
+        public int AcademicCalendarDetailStartId { get; set; } // TODO need to have AcademicCalendarDetailStopId, yet to figure this out how to configure the entities
         public AcademicCalendarDetail AcademicCalendarDetail { get; set; }
         public List<EnrolledCourse> EnrolledCourses { get; set; }
     }

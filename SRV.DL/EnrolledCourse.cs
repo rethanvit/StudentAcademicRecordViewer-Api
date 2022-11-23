@@ -2,12 +2,12 @@
 {
     public class EnrolledCourse
     {
-        public int EnrolledCourseId { get; set; }
         public int StudentId { get; set; }
         public Student Student { get; set; }
         public double Marks { get; set; }
         public OfferedCourse OfferedCourse { get; set; }
-        public int OfferedCourseId { get; set; }
+        public int CourseId { get; set; }
+        public int AcademicCalendarDetailId { get; set; }
 
     }
 }
