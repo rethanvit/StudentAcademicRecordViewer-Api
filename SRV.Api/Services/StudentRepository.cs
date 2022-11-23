@@ -131,14 +131,11 @@ namespace SRV.Api.Services
         {
             var academicCalendarDetailIdInWhichCourseWasOffered = _studentContext.AcademicCalendarDetails.Join(_studentContext.AcademicCalendars, acd => acd.AcademicCalendarId, ac => ac.AcademicCalendarId, (acd, ac) => new { acd, ac })
                                                                        .Join(_studentContext.RefAcademicTerms, acdac => acdac.ac.AcademicTermId, at => at.AcademicTermId, (acdac, at) => new { acdac, at })
-                                                                       .Where(acdacat => acdacat.at.AcademicTermId == _studentContext.Programs.Single(p => p.Code.Equals(courseArgs.StudentProgramCode)).AcademicTermId &&
+                                                                       .Where(acdacat => acdacat.at.AcademicTermId == _studentContext.Programs.Single(p => p.Code.Equals(_studentContext.Students.Single(s => s.StudentId == courseArgs.StudentId).ProgramId)).AcademicTermId &&
                                                                               acdacat.acdac.ac.Name.Equals(courseArgs.AcademicTerm) &&
                                                                               acdacat.acdac.acd.AcademicCalendarDetailId >= _studentContext.Students.Include(s => s.AcademicCalendarDetail).Single(s => s.StudentId == courseArgs.StudentId).AcademicCalendarDetail.AcademicCalendarDetailId &&
                                                                               acdacat.acdac.acd.Year == courseArgs.Academicyear)
                                                                        .Select(acdacat => acdacat.acdac.acd.AcademicCalendarDetailId).Single();
-            //var academicCourseDetailIdOfTheCourse = _studentContext.AcademicCalendarDetails.Join(_studentContext.OfferedCourses, acd => acd.AcademicCalendarDetailId, oc => oc.AcademicCalendarDetailId, (acd, oc) => new { acd, oc })
-            //                                                                                .Where(acdoc => acdoc.oc.CourseId == _studentContext.Courses.Single(c => c.Code.Equals(courseArgs.CourseCode) && c.Level.Equals(courseArgs.CourseLevel)).CourseId &&
-            //                                                                                       acdoc.acd.Year >= _studentContext.Students.Include(d => d.AcademicCalendarDetail).Single(s => s.StudentId == courseArgs.StudentId).AcademicCalendarDetail.Year).ToList();
 
             var courseDeleted = await _studentContext.EnrolledCourses.SingleAsync(ec => ec.CourseId == _studentContext.Courses.Single(c => c.Code.Equals(courseArgs.CourseCode) && c.Level == courseArgs.CourseLevel).CourseId && ec.StudentId == courseArgs.StudentId &&
                                                                             ec.AcademicCalendarDetailId == academicCalendarDetailIdInWhichCourseWasOffered);
