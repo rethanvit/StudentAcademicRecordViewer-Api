@@ -100,7 +100,19 @@ namespace SRV.Api.Services
                         on student.StudentId equals studentEC.StudentId
                         into CoursesEnrolledByStudents
                        from coursesEnrolledByStudent in CoursesEnrolledByStudents.DefaultIfEmpty()
-                       select new { student.StudentId, student.FirstName, student.LastName, coursesEnrolledByStudent.Code, coursesEnrolledByStudent.Level, coursesEnrolledByStudent.courseName, coursesEnrolledByStudent.departmentName, Year = coursesEnrolledByStudent.Year, Term = coursesEnrolledByStudent.termName, Marks = (double?)coursesEnrolledByStudent.Marks }).ToListAsync();
+                       select new 
+                        { 
+                           student.StudentId, 
+                           student.FirstName, 
+                           student.LastName, 
+                           code = coursesEnrolledByStudent == null ? null : coursesEnrolledByStudent.Code, 
+                           level = coursesEnrolledByStudent == null ? null : (int?)coursesEnrolledByStudent.Level, 
+                           courseName = coursesEnrolledByStudent == null ? null : coursesEnrolledByStudent.courseName, 
+                           departmentName = coursesEnrolledByStudent == null ? null : coursesEnrolledByStudent.departmentName, 
+                           Year = coursesEnrolledByStudent == null ? null : (int?)coursesEnrolledByStudent.Year, 
+                           Term = coursesEnrolledByStudent == null ? null : coursesEnrolledByStudent.termName, 
+                           Marks = coursesEnrolledByStudent == null ? null : (double?)coursesEnrolledByStudent.Marks 
+                       }).ToListAsync();
 
             StudentWithCoursesDtoGet studentWithCourseDetailsDto = null;
             studentEntityWithCourses.ForEach(s =>
@@ -108,16 +120,16 @@ namespace SRV.Api.Services
                 if (studentWithCourseDetailsDto == null) studentWithCourseDetailsDto = new StudentWithCoursesDtoGet();
                 if (!studentWithCourseDetailsDto.StudentId.Equals(s.StudentId))
                     studentWithCourseDetailsDto = new StudentWithCoursesDtoGet { StudentId = s.StudentId, FirstName = s.FirstName, LastName = s.LastName };
-                if (s.Code != null)
+                if (s.code != null)
                 {
                     studentWithCourseDetailsDto.CoursesEnrolled.Add(new EnrolledCourseDetailsDto
                     {
-                        CourseCode = s.Code,
+                        CourseCode = s.code,
                         CourseName = s.courseName,
-                        CourseLevel = s.Level,
+                        CourseLevel = s.level.Value,
                         DepartmentName = s.departmentName,
                         AcademicTerm = s.Term,
-                        AcademicYear = s.Year,
+                        AcademicYear = s.Year.Value,
                         Marks = s.Marks.Value
                     });
                 }
