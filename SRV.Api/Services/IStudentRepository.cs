@@ -6,7 +6,7 @@ namespace SRV.Api.Services
     {
         Task<StudentWithCoursesDtoGet> GetStudentAndCoursesByIdAsync(int studentId);
         Task<StudentDtoForGet> GetStudentByIdAsync(int studentId);
-        Task DeleteCoursesEnrolled(StudentCourseArgs courseArgs);
+        Task DeleteCoursesEnrolled(int studentId, CourseArgs courseArgs);
         Task GetAademicYearsAndAcademicTermsACourseIsOffered(int studentId, int courseLevel, string courseCode);
     }
 }

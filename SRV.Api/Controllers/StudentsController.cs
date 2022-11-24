@@ -37,15 +37,15 @@ namespace SRV.Api.Controllers
         }
 
         [HttpDelete("{organizationId:int}/{studentId:int}/EnrolledCourse")]
-        public async Task<IActionResult> DeleteEnrolledCourse([FromBody]StudentCourseArgs courseArgs)
+        public async Task<IActionResult> DeleteEnrolledCourse(int organizationId, int studentId, [FromBody]CourseArgs courseArgs)
         {
-            await _studentRepository.DeleteCoursesEnrolled(courseArgs);
+            await _studentRepository.DeleteCoursesEnrolled(studentId, courseArgs);
             return Ok();
 
         }
 
-        [HttpPost("{organizationId:int}/{studentId:int}/EnrolledCourse/{courseCode: string}/{courseLevel:int}")]
-        public async Task<IActionResult> GetEditEnrolledCourseOptions(int studentId, int courseLevel, string courseCode)
+        [HttpGet("{organizationId:int}/{studentId:int}/EnrolledCourse/{courseCode:alpha}/{courseLevel:int}")]
+        public async Task<IActionResult> GetEditEnrolledCourseOptions(int organizationId, int studentId, string courseCode, int courseLevel)
         {
             await _studentRepository.GetAademicYearsAndAcademicTermsACourseIsOffered(studentId, courseLevel, courseCode);
             return Ok();
