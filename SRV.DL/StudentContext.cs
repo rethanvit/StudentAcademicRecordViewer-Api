@@ -111,7 +111,8 @@ namespace SRV.DL
 
             var programs = new List<Program> {
                 new Program {ProgramId = 1, Code="MBA", Name = "Masters in Business Administration", DepartmentId = 1, AcademicTermId = 1, Active = true},
-                new Program {ProgramId = 2, Code="MCS", Name = "Masters in Computer Science", DepartmentId = 2, AcademicTermId = 2, Active = true}
+                new Program {ProgramId = 2, Code="MCS", Name = "Masters in Computer Science", DepartmentId = 2, AcademicTermId = 2, Active = true},
+                new Program {ProgramId = 3, Code="BCS", Name = "Bachelors in Computer Science", DepartmentId = 2, AcademicTermId = 3, Active = true}
             };
             modelBuilder.Entity<Program>().HasData(programs);
 
@@ -157,6 +158,10 @@ namespace SRV.DL
                 new Course { CourseId = 4, Code = "DS", Level=101, Name = "Data Structures", ProgramId = 2, StartDate = new DateTime(2020, 01, 01),
                     StopDate = new DateTime(2079, 06, 06), Active = true },
                 new Course { CourseId = 5, Code = "OOP", Level=101, Name = "Object Oriented Prog", ProgramId = 2, StartDate = new DateTime(2020, 01, 01),
+                    StopDate = new DateTime(2079, 06, 06), Active = true },
+                new Course { CourseId = 6, Code = "FJ", Level=101, Name = "Fundamental Java", ProgramId = 3, StartDate = new DateTime(2020, 01, 01),
+                    StopDate = new DateTime(2079, 06, 06), Active = true },
+                new Course { CourseId = 7, Code = "AJ", Level=101, Name = "Advanced Java", ProgramId = 3, StartDate = new DateTime(2020, 01, 01),
                     StopDate = new DateTime(2079, 06, 06), Active = true }
 
             };
@@ -180,13 +185,28 @@ namespace SRV.DL
                 new OfferedCourse { CourseId = 5, AcademicCalendarDetailId = 8 },
                 new OfferedCourse { CourseId = 5, AcademicCalendarDetailId = 9 },
                 new OfferedCourse { CourseId = 5, AcademicCalendarDetailId = 14 },
-                new OfferedCourse { CourseId = 5, AcademicCalendarDetailId = 15 }
+                new OfferedCourse { CourseId = 6, AcademicCalendarDetailId = 4 },
+                new OfferedCourse { CourseId = 6, AcademicCalendarDetailId = 5 },
+                new OfferedCourse { CourseId = 6, AcademicCalendarDetailId = 6 },
+                new OfferedCourse { CourseId = 6, AcademicCalendarDetailId = 10 },
+                new OfferedCourse { CourseId = 6, AcademicCalendarDetailId = 11 },
+                new OfferedCourse { CourseId = 6, AcademicCalendarDetailId = 12 },
+                new OfferedCourse { CourseId = 6, AcademicCalendarDetailId = 16 },
+                new OfferedCourse { CourseId = 6, AcademicCalendarDetailId = 17 },
+                new OfferedCourse { CourseId = 6, AcademicCalendarDetailId = 18 },
+                new OfferedCourse { CourseId = 7, AcademicCalendarDetailId = 10 },
+                new OfferedCourse { CourseId = 7, AcademicCalendarDetailId = 11 },
+                new OfferedCourse { CourseId = 7, AcademicCalendarDetailId = 12 },
+                new OfferedCourse { CourseId = 7, AcademicCalendarDetailId = 16 },
+                new OfferedCourse { CourseId = 7, AcademicCalendarDetailId = 17 },
+                new OfferedCourse { CourseId = 7, AcademicCalendarDetailId = 18 }
             };
             modelBuilder.Entity<OfferedCourse>().HasData(offeredCourses);
 
             var student = new List<Student> {
                 new Student { StudentId = 1, FirstName = "Johnny", LastName="Patty",ProgramId = 1, StartDate = new DateTime(2021,01,01), StopDate = new DateTime(2079,06,06), AcademicCalendarDetailStartId = 7},
-                new Student { StudentId = 2, FirstName = "Uma", LastName="Putta",ProgramId = 2, StartDate = new DateTime(2021,01,01), StopDate = new DateTime(2079,06,06), AcademicCalendarDetailStartId = 8}
+                new Student { StudentId = 2, FirstName = "Uma", LastName="Putta",ProgramId = 2, StartDate = new DateTime(2021,01,01), StopDate = new DateTime(2079,06,06), AcademicCalendarDetailStartId = 8},
+                new Student { StudentId = 3, FirstName = "Benny", LastName="Johns",ProgramId = 3, StartDate = new DateTime(2021,01,01), StopDate = new DateTime(2079,06,06), AcademicCalendarDetailStartId = 8}
             };
             modelBuilder.Entity<Student>().HasData(student);
 
@@ -198,7 +218,9 @@ namespace SRV.DL
                 new EnrolledCourse {Marks = 45, StudentId = 1, CourseId=1, AcademicCalendarDetailId= 13},
                 new EnrolledCourse {Marks = 45, StudentId = 1, CourseId=3, AcademicCalendarDetailId= 13},
                 new EnrolledCourse {Marks = 45, StudentId = 2, CourseId=4, AcademicCalendarDetailId= 8},
-                new EnrolledCourse {Marks = 45, StudentId = 2, CourseId=5, AcademicCalendarDetailId= 9}
+                new EnrolledCourse {Marks = 45, StudentId = 2, CourseId=5, AcademicCalendarDetailId= 9},
+                new EnrolledCourse {Marks = 45, StudentId = 3, CourseId=6, AcademicCalendarDetailId= 10},
+                new EnrolledCourse {Marks = 45, StudentId = 3, CourseId=7, AcademicCalendarDetailId= 11}
             };
             modelBuilder.Entity<EnrolledCourse>().HasData(studentCourses);
         }
