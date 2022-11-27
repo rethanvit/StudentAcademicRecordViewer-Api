@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SRV.DL;
 
@@ -11,9 +12,10 @@ using SRV.DL;
 namespace SRV.DL.Migrations
 {
     [DbContext(typeof(StudentContext))]
-    partial class StudentContextModelSnapshot : ModelSnapshot
+    [Migration("20221124185729_newSeedData")]
+    partial class newSeedData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -547,62 +549,12 @@ namespace SRV.DL.Migrations
                         new
                         {
                             CourseId = 4,
-                            AcademicCalendarDetailId = 2
-                        },
-                        new
-                        {
-                            CourseId = 4,
-                            AcademicCalendarDetailId = 3
-                        },
-                        new
-                        {
-                            CourseId = 4,
-                            AcademicCalendarDetailId = 8
-                        },
-                        new
-                        {
-                            CourseId = 4,
-                            AcademicCalendarDetailId = 9
-                        },
-                        new
-                        {
-                            CourseId = 4,
-                            AcademicCalendarDetailId = 14
-                        },
-                        new
-                        {
-                            CourseId = 4,
-                            AcademicCalendarDetailId = 15
-                        },
-                        new
-                        {
-                            CourseId = 5,
-                            AcademicCalendarDetailId = 2
-                        },
-                        new
-                        {
-                            CourseId = 5,
-                            AcademicCalendarDetailId = 3
-                        },
-                        new
-                        {
-                            CourseId = 5,
                             AcademicCalendarDetailId = 8
                         },
                         new
                         {
                             CourseId = 5,
                             AcademicCalendarDetailId = 9
-                        },
-                        new
-                        {
-                            CourseId = 5,
-                            AcademicCalendarDetailId = 14
-                        },
-                        new
-                        {
-                            CourseId = 5,
-                            AcademicCalendarDetailId = 15
                         });
                 });
 

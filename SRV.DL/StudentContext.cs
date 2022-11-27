@@ -90,12 +90,14 @@ namespace SRV.DL
             //seed data
             //Even when Identity is turned off EF inserts Id value as shown below
             var organizations = new List<Organization>{
-                new Organization { OrganizationId = 1, Name = "LLP School of Business", StartDate = new DateTime(2021, 01, 01), StopDate = new DateTime(2079, 06, 06), Active = true }
+                new Organization { OrganizationId = 1, Name = "LLP Institute of Business & Technology", StartDate = new DateTime(2021, 01, 01), StopDate = new DateTime(2079, 06, 06), Active = true }
             };
             modelBuilder.Entity<Organization>().HasData(organizations);
 
             var departments = new List<Department>{
                 new Department { DepartmentId = 1, Code = "BUS", Name = "School of Business", MaxMarks = 100, MinMarks = 40, StartDate = new DateTime(2021, 01, 01),
+                    StopDate = new DateTime(2079, 06, 06), Active = true, OrganizationId = 1 },
+                new Department { DepartmentId = 2, Code = "CSE", Name = "School of Computer Science", MaxMarks = 100, MinMarks = 40, StartDate = new DateTime(2021, 01, 01),
                     StopDate = new DateTime(2079, 06, 06), Active = true, OrganizationId = 1 }
             };
             modelBuilder.Entity<Department>().HasData(departments);
@@ -109,6 +111,7 @@ namespace SRV.DL
 
             var programs = new List<Program> {
                 new Program {ProgramId = 1, Code="MBA", Name = "Masters in Business Administration", DepartmentId = 1, AcademicTermId = 1, Active = true},
+                new Program {ProgramId = 2, Code="MCS", Name = "Masters in Computer Science", DepartmentId = 2, AcademicTermId = 2, Active = true}
             };
             modelBuilder.Entity<Program>().HasData(programs);
 
@@ -150,6 +153,10 @@ namespace SRV.DL
                 new Course { CourseId = 2, Code = "ACC", Level=101, Name = "Accounts", ProgramId = 1, StartDate = new DateTime(2020, 01, 01),
                     StopDate = new DateTime(2079, 06, 06), Active = true },
                 new Course { CourseId = 3, Code = "FIN", Level=101, Name = "Finance", ProgramId = 1, StartDate = new DateTime(2020, 01, 01),
+                    StopDate = new DateTime(2079, 06, 06), Active = true },
+                new Course { CourseId = 4, Code = "DS", Level=101, Name = "Data Structures", ProgramId = 2, StartDate = new DateTime(2020, 01, 01),
+                    StopDate = new DateTime(2079, 06, 06), Active = true },
+                new Course { CourseId = 5, Code = "OOP", Level=101, Name = "Object Oriented Prog", ProgramId = 2, StartDate = new DateTime(2020, 01, 01),
                     StopDate = new DateTime(2079, 06, 06), Active = true }
 
             };
@@ -161,12 +168,25 @@ namespace SRV.DL
                 new OfferedCourse { CourseId = 3, AcademicCalendarDetailId = 7 },
                 new OfferedCourse { CourseId = 1, AcademicCalendarDetailId = 7 },
                 new OfferedCourse { CourseId = 1, AcademicCalendarDetailId = 13 },
-                new OfferedCourse { CourseId = 3, AcademicCalendarDetailId = 13 }
+                new OfferedCourse { CourseId = 3, AcademicCalendarDetailId = 13 },
+                new OfferedCourse { CourseId = 4, AcademicCalendarDetailId = 2 },
+                new OfferedCourse { CourseId = 4, AcademicCalendarDetailId = 3 },
+                new OfferedCourse { CourseId = 4, AcademicCalendarDetailId = 8 },
+                new OfferedCourse { CourseId = 4, AcademicCalendarDetailId = 9 },
+                new OfferedCourse { CourseId = 4, AcademicCalendarDetailId = 14 },
+                new OfferedCourse { CourseId = 4, AcademicCalendarDetailId = 15 },
+                new OfferedCourse { CourseId = 5, AcademicCalendarDetailId = 2 },
+                new OfferedCourse { CourseId = 5, AcademicCalendarDetailId = 3 },
+                new OfferedCourse { CourseId = 5, AcademicCalendarDetailId = 8 },
+                new OfferedCourse { CourseId = 5, AcademicCalendarDetailId = 9 },
+                new OfferedCourse { CourseId = 5, AcademicCalendarDetailId = 14 },
+                new OfferedCourse { CourseId = 5, AcademicCalendarDetailId = 15 }
             };
             modelBuilder.Entity<OfferedCourse>().HasData(offeredCourses);
 
             var student = new List<Student> {
-                new Student { StudentId = 1, FirstName = "Johnny", LastName="Patty",ProgramId = 1, StartDate = new DateTime(2021,01,01), StopDate = new DateTime(2079,06,06), AcademicCalendarDetailStartId = 7}
+                new Student { StudentId = 1, FirstName = "Johnny", LastName="Patty",ProgramId = 1, StartDate = new DateTime(2021,01,01), StopDate = new DateTime(2079,06,06), AcademicCalendarDetailStartId = 7},
+                new Student { StudentId = 2, FirstName = "Uma", LastName="Putta",ProgramId = 2, StartDate = new DateTime(2021,01,01), StopDate = new DateTime(2079,06,06), AcademicCalendarDetailStartId = 8}
             };
             modelBuilder.Entity<Student>().HasData(student);
 
@@ -176,7 +196,9 @@ namespace SRV.DL
                 new EnrolledCourse {Marks = 45, StudentId = 1, CourseId=1, AcademicCalendarDetailId= 7},
                 new EnrolledCourse {Marks = 45, StudentId = 1, CourseId=2, AcademicCalendarDetailId= 7},
                 new EnrolledCourse {Marks = 45, StudentId = 1, CourseId=1, AcademicCalendarDetailId= 13},
-                new EnrolledCourse {Marks = 45, StudentId = 1, CourseId=3, AcademicCalendarDetailId= 13}
+                new EnrolledCourse {Marks = 45, StudentId = 1, CourseId=3, AcademicCalendarDetailId= 13},
+                new EnrolledCourse {Marks = 45, StudentId = 2, CourseId=4, AcademicCalendarDetailId= 8},
+                new EnrolledCourse {Marks = 45, StudentId = 2, CourseId=5, AcademicCalendarDetailId= 9}
             };
             modelBuilder.Entity<EnrolledCourse>().HasData(studentCourses);
         }
