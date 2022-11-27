@@ -47,9 +47,16 @@ namespace SRV.Api.Controllers
         [HttpGet("{organizationId:int}/{studentId:int}/EnrolledCourse/{courseCode:alpha}/{courseLevel:int}")]
         public async Task<IActionResult> GetEditEnrolledCourseOptions(int organizationId, int studentId, string courseCode, int courseLevel)
         {
-            await _studentRepository.GetAademicYearsAndAcademicTermsACourseIsOffered(studentId, courseLevel, courseCode);
-            return Ok();
+            var yearAndAcademicTermsTheCourseWasOffered = await _studentRepository.GetAademicYearsAndAcademicTermsACourseIsOffered(studentId, courseLevel, courseCode);
+            return Ok(yearAndAcademicTermsTheCourseWasOffered);
 
+        }
+
+        [HttpPut("{organizationId:int}/{studentId:int}/EnrolledCourse")]
+        public async Task<IActionResult> UpdateEnrolledCourse(int organizationId, int studentId, [FromBody]UpdateCourseArgs courseArgs)
+        {
+            await _studentRepository.UpdatStudentEnrolledCourse(studentId, courseArgs.updateCourseArgs);
+            return Ok();
         }
 
     }
