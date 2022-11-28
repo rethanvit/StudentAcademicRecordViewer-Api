@@ -224,13 +224,15 @@ namespace SRV.Api.Services
 
                 var studentCourseUpdate = await _studentContext.EnrolledCourses.SingleAsync(ec => ec.StudentId == studentId && ec.AcademicCalendarDetailId == currentAcademicCalendarDetailId && ec.CourseId == course.CourseId);
                 _studentContext.Remove(studentCourseUpdate);
-                await _studentContext.EnrolledCourses.AddAsync(new EnrolledCourse { StudentId = studentId, CourseId = course.CourseId, AcademicCalendarDetailId = updatedAcademicCalendarDetailId });
+                await _studentContext.EnrolledCourses.AddAsync(new EnrolledCourse { StudentId = studentId, CourseId = course.CourseId, AcademicCalendarDetailId = updatedAcademicCalendarDetailId, Marks = courseArgs.UpdatedMarks });
                 await _studentContext.SaveChangesAsync();
             }
-
-            var studentMarksUpdate = await _studentContext.EnrolledCourses.SingleAsync(ec => ec.StudentId == studentId && ec.AcademicCalendarDetailId == currentAcademicCalendarDetailId && ec.CourseId == course.CourseId);
-            studentMarksUpdate.Marks = courseArgs.UpdatedMarks;
-            await _studentContext.SaveChangesAsync();
+            else
+            {
+                var studentMarksUpdate = await _studentContext.EnrolledCourses.SingleAsync(ec => ec.StudentId == studentId && ec.AcademicCalendarDetailId == currentAcademicCalendarDetailId && ec.CourseId == course.CourseId);
+                studentMarksUpdate.Marks = courseArgs.UpdatedMarks;
+                await _studentContext.SaveChangesAsync();
+            }
         }
 
     }
