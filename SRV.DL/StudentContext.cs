@@ -22,6 +22,7 @@ namespace SRV.DL
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            //TODO use the config file for connection string
             if (!optionsBuilder.IsConfigured)
                 optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=SRVTest");
         }
