@@ -91,7 +91,7 @@ namespace SRV.Api.Controllers
         }
 
         [HttpPost("addStudent")]
-        public async Task<ActionResult<AcademicCalendarDetailOptionsDto>> AddStudent(AddStudentDto addStudent)
+        public async Task<ActionResult<int>> AddStudent(AddStudentDto addStudent)
         {
             if(!_studentRepository.Get<AcademicCalendarDetail>(c => c.AcademicCalendarDetailId == addStudent.AcademicDetailsStartId).Any())
             {

@@ -244,7 +244,7 @@ namespace SRV.Api.Services
 
         public async Task<int> AddStudent(AddStudentDto addStudentDto)
         {
-            _studentContext.Add(new Student
+            var studentToBeAdded = new Student
             {
                 ProgramId = addStudentDto.ProgramId,
                 FirstName = addStudentDto.FirstName,
@@ -252,9 +252,12 @@ namespace SRV.Api.Services
                 AcademicCalendarDetailStartId = addStudentDto.AcademicDetailsStartId,
                 StartDate = _studentContext.AcademicCalendarDetails.Single(acds => acds.AcademicCalendarDetailId == addStudentDto.AcademicDetailsStartId).StartDate,
                 StopDate = new DateTime(2079, 06, 06)
-            });
+            };
+            _studentContext.Add(studentToBeAdded);
 
-            return await _studentContext.SaveChangesAsync();
+            await _studentContext.SaveChangesAsync();
+
+            return studentToBeAdded.StudentId;
         }
 
         public async Task<List<CourseDto>> GetCoursesThatTheStudentCouldHaveEnrolled(int studentId)

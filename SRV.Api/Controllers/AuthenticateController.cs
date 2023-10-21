@@ -48,7 +48,7 @@ namespace SRV.Api.Controllers
                                                      _configuration["Authentication:Audience"],
                                                      claimsForToken,
                                                      DateTime.UtcNow,
-                                                     DateTime.UtcNow.AddMinutes(10),
+                                                     DateTime.UtcNow.AddSeconds(double.Parse(_configuration["tokenExpiryInSeconds"])),
                                                      signingCredentials);
             var generatedToken = new JwtSecurityTokenHandler().WriteToken(jwtTokenData);
             return JsonConvert.SerializeObject(generatedToken);
