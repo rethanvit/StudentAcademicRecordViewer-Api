@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SRV.DL;
 
@@ -11,9 +12,10 @@ using SRV.DL;
 namespace SRV.DL.Migrations
 {
     [DbContext(typeof(StudentContext))]
-    partial class StudentContextModelSnapshot : ModelSnapshot
+    [Migration("20230929142225_addPasswordToUserTable")]
+    partial class addPasswordToUserTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1031,7 +1033,7 @@ namespace SRV.DL.Migrations
                         new
                         {
                             UserId = 1,
-                            Password = "Test1",
+                            Password = "",
                             ProgramId = 2,
                             UserFirstName = "proc1Fname",
                             UserLastName = "proc1Lname",
@@ -1041,7 +1043,7 @@ namespace SRV.DL.Migrations
                         new
                         {
                             UserId = 2,
-                            Password = "Test2",
+                            Password = "",
                             ProgramId = 3,
                             UserFirstName = "proc2Fname",
                             UserLastName = "proc2Lname",
@@ -1051,7 +1053,7 @@ namespace SRV.DL.Migrations
                         new
                         {
                             UserId = 3,
-                            Password = "Test3",
+                            Password = "",
                             ProgramId = 2,
                             UserFirstName = "admin1Fname",
                             UserLastName = "admin1Lname",

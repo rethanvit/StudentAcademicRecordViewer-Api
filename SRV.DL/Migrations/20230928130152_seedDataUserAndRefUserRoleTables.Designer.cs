@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SRV.DL;
 
@@ -11,9 +12,10 @@ using SRV.DL;
 namespace SRV.DL.Migrations
 {
     [DbContext(typeof(StudentContext))]
-    partial class StudentContextModelSnapshot : ModelSnapshot
+    [Migration("20230928130152_seedDataUserAndRefUserRoleTables")]
+    partial class seedDataUserAndRefUserRoleTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -996,10 +998,6 @@ namespace SRV.DL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"), 1L, 1);
 
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("ProgramId")
                         .HasColumnType("int");
 
@@ -1031,7 +1029,6 @@ namespace SRV.DL.Migrations
                         new
                         {
                             UserId = 1,
-                            Password = "Test1",
                             ProgramId = 2,
                             UserFirstName = "proc1Fname",
                             UserLastName = "proc1Lname",
@@ -1041,7 +1038,6 @@ namespace SRV.DL.Migrations
                         new
                         {
                             UserId = 2,
-                            Password = "Test2",
                             ProgramId = 3,
                             UserFirstName = "proc2Fname",
                             UserLastName = "proc2Lname",
@@ -1051,44 +1047,11 @@ namespace SRV.DL.Migrations
                         new
                         {
                             UserId = 3,
-                            Password = "Test3",
                             ProgramId = 2,
                             UserFirstName = "admin1Fname",
                             UserLastName = "admin1Lname",
                             UserRoleCode = "ADMN",
                             Username = "admin1"
-                        });
-                });
-
-            modelBuilder.Entity("SRV.DL.UserStudent", b =>
-                {
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("StudentId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserStudent");
-
-                    b.HasData(
-                        new
-                        {
-                            StudentId = 3,
-                            UserId = 1
-                        },
-                        new
-                        {
-                            StudentId = 2,
-                            UserId = 2
-                        },
-                        new
-                        {
-                            StudentId = 1,
-                            UserId = 2
                         });
                 });
 
@@ -1229,21 +1192,6 @@ namespace SRV.DL.Migrations
                     b.Navigation("Program");
 
                     b.Navigation("RefUserRole");
-                });
-
-            modelBuilder.Entity("SRV.DL.UserStudent", b =>
-                {
-                    b.HasOne("SRV.DL.Student", null)
-                        .WithMany()
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SRV.DL.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("SRV.DL.AcademicCalendar", b =>

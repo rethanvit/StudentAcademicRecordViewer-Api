@@ -12,5 +12,6 @@
         public int AcademicCalendarDetailStartId { get; set; } // TODO need to have AcademicCalendarDetailStopId, yet to figure this out how to configure the entities
         public AcademicCalendarDetail AcademicCalendarDetail { get; set; }
         public List<EnrolledCourse> EnrolledCourses { get; set; }
+        public List<User> Users { get; set; }
     }
 }

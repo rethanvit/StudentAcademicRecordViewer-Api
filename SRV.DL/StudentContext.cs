@@ -2,7 +2,7 @@
 
 namespace SRV.DL
 {
-    internal class StudentContext: DbContext
+    public class StudentContext: DbContext
     {
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<Department> Departments { get; set; }
@@ -14,6 +14,14 @@ namespace SRV.DL
         public DbSet<AcademicCalendar> AcademicCalendars { get; set; }
         public DbSet<AcademicCalendarDetail> AcademicCalendarDetails { get; set; }
         public DbSet<Program> Programs { get; set; }
+        public DbSet<RefUserRole> RefUserRoles { get; set; }
+        public DbSet<User> Users { get; set; }
+
+        //commented it as it 
+        public override DbSet<DbEntity> Set<DbEntity>() where DbEntity : class
+        {
+            return base.Set<DbEntity>();
+        }
 
         public StudentContext(DbContextOptions options):base(options)
         {
@@ -24,7 +32,7 @@ namespace SRV.DL
         {
             //TODO use the config file for connection string
             if (!optionsBuilder.IsConfigured)
-                optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=SRVTest");
+                optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=SRVTest").EnableSensitiveDataLogging();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -38,7 +46,7 @@ namespace SRV.DL
             modelBuilder.Entity<Program>().HasOne(d => d.Department).WithMany(p => p.Programs).OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<Program>().HasOne(p => p.RefAcademicTerm).WithMany(m => m.Programs).HasForeignKey(f => f.AcademicTermId);
             modelBuilder.Entity<Program>().HasOne(d => d.RefAcademicTerm).WithMany(p => p.Programs).OnDelete(DeleteBehavior.NoAction);
-            modelBuilder.Entity<Program>().HasAlternateKey(p => p.Code);
+            modelBuilder.Entity<Program>().HasAlternateKey(p => new { p.Code, p.Name, p.DepartmentId});
 
             modelBuilder.Entity<EnrolledCourse>().HasOne(o => o.Student).WithMany(c => c.EnrolledCourses).OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<EnrolledCourse>().HasOne(o => o.OfferedCourse).WithMany(c => c.EnrolledCourses).OnDelete(DeleteBehavior.NoAction);
@@ -57,15 +65,14 @@ namespace SRV.DL
             //set default value
             modelBuilder.Entity<Department>().Property(a => a.MaxMarks).HasDefaultValue(100);
             modelBuilder.Entity<Department>().Property(a => a.MinMarks).HasDefaultValue(40);
-            modelBuilder.Entity<Department>().HasAlternateKey(d => new { d.Code, d.Name});
+            modelBuilder.Entity<Department>().HasAlternateKey(d => new { d.Code, d.Name, d.OrganizationId});
 
             modelBuilder.Entity<Student>().HasOne(o => o.Program).WithMany(c => c.Students).OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<Student>().Property(d => d.StartDate).HasColumnType("smalldatetime");
             modelBuilder.Entity<Student>().Property(d => d.StopDate).HasColumnType("smalldatetime");
             modelBuilder.Entity<Student>().HasOne(s => s.AcademicCalendarDetail).WithMany(p => p.Students).HasForeignKey(f => new { f.AcademicCalendarDetailStartId });
             modelBuilder.Entity<Student>().HasOne(s => s.AcademicCalendarDetail).WithMany(c => c.Students).OnDelete(DeleteBehavior.NoAction);
-
-
+            modelBuilder.Entity<Student>().HasAlternateKey(s => new { s.StudentId, s.ProgramId, s.AcademicCalendarDetailStartId});
 
             modelBuilder.Entity<AcademicCalendar>().HasKey(p => p.AcademicCalendarId);
             modelBuilder.Entity<AcademicCalendar>().HasOne(p => p.RefAcademicTerm).WithMany(m => m.AcademicCalendars).HasForeignKey(f => f.AcademicTermId);
@@ -86,7 +93,13 @@ namespace SRV.DL
             modelBuilder.Entity<Organization>().Property(a => a.StartDate).HasColumnType("smalldatetime");
             modelBuilder.Entity<Organization>().Property(a => a.StopDate).HasColumnType("smalldatetime");
 
+            modelBuilder.Entity<RefUserRole>().HasKey(p => p.UserRoleCode);
 
+            modelBuilder.Entity<User>().HasOne(o => o.Program).WithMany(c => c.Users).OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<User>().HasOne(r => r.RefUserRole).WithMany(u => u.Users).HasForeignKey(u => u.UserRoleCode);
+
+            //explcitly mentioning the *:* relationshipa and the join entity table
+            modelBuilder.Entity<User>().HasMany(s => s.Students).WithMany(u => u.Users).UsingEntity<UserStudent>();
 
             //seed data
             //Even when Identity is turned off EF inserts Id value as shown below
@@ -105,8 +118,9 @@ namespace SRV.DL
 
             var academicTerms = new List<RefAcademicTerm> {
                 new RefAcademicTerm { AcademicTermId = 1,Terms = 1, Name = "Annual", Active = true},
-                new RefAcademicTerm { AcademicTermId = 2,Terms = 2, Name = "Semester", Active = false},
-                new RefAcademicTerm { AcademicTermId = 3,Terms = 3, Name = "Quarter", Active = false}
+                new RefAcademicTerm { AcademicTermId = 2,Terms = 2, Name = "Bi-Semester", Active = false},
+                new RefAcademicTerm { AcademicTermId = 3,Terms = 3, Name = "Tri-Semester", Active = false},
+                new RefAcademicTerm { AcademicTermId = 4,Terms = 4, Name = "Quarter", Active = false}
             };
             modelBuilder.Entity<RefAcademicTerm>().HasData(academicTerms);
 
@@ -124,6 +138,10 @@ namespace SRV.DL
                 new AcademicCalendar { AcademicCalendarId = 4,Name = "Spring", AcademicTermId = 3},
                 new AcademicCalendar { AcademicCalendarId = 5,Name = "Summer", AcademicTermId = 3},
                 new AcademicCalendar { AcademicCalendarId = 6,Name = "Fall",   AcademicTermId = 3},
+                new AcademicCalendar { AcademicCalendarId = 7,Name = "Fall", AcademicTermId = 4},
+                new AcademicCalendar { AcademicCalendarId = 8,Name = "Winter", AcademicTermId = 4},
+                new AcademicCalendar { AcademicCalendarId = 9,Name = "Spring",   AcademicTermId = 4},
+                new AcademicCalendar { AcademicCalendarId = 10,Name = "Summer",   AcademicTermId = 4},
             };
             modelBuilder.Entity<AcademicCalendar>().HasData(academicCalendars);
 
@@ -162,7 +180,7 @@ namespace SRV.DL
                     StopDate = new DateTime(2079, 06, 06), Active = true },
                 new Course { CourseId = 6, Code = "FJ", Level=101, Name = "Fundamental Java", ProgramId = 3, StartDate = new DateTime(2020, 01, 01),
                     StopDate = new DateTime(2079, 06, 06), Active = true },
-                new Course { CourseId = 7, Code = "AJ", Level=101, Name = "Advanced Java", ProgramId = 3, StartDate = new DateTime(2020, 01, 01),
+                new Course { CourseId = 7, Code = "AJ", Level=201, Name = "Advanced Java", ProgramId = 3, StartDate = new DateTime(2020, 01, 01),
                     StopDate = new DateTime(2079, 06, 06), Active = true }
 
             };
@@ -224,6 +242,30 @@ namespace SRV.DL
                 new EnrolledCourse {Marks = 45, StudentId = 3, CourseId=7, AcademicCalendarDetailId= 11}
             };
             modelBuilder.Entity<EnrolledCourse>().HasData(studentCourses);
+
+            var refUserRoles = new List<RefUserRole>
+            {
+                new RefUserRole { UserRoleCode="ADMN", UserRoleName="Adminstrator"},
+                new RefUserRole { UserRoleCode="PROC", UserRoleName="Proctor"}
+            };
+            modelBuilder.Entity<RefUserRole>().HasData(refUserRoles);
+
+            var userData = new List<User>
+            {
+                new User { UserId = 1, Username="proc1", UserFirstName="proc1Fname", UserLastName="proc1Lname", ProgramId = 2, Password="Test1", UserRoleCode = "PROC"},
+                new User { UserId = 2, Username="proc2", UserFirstName="proc2Fname", UserLastName="proc2Lname", ProgramId = 3, Password="Test2", UserRoleCode = "PROC"},
+                new User { UserId = 3, Username="admin1", UserFirstName="admin1Fname", UserLastName="admin1Lname", ProgramId = 2, Password="Test3", UserRoleCode = "ADMN"}
+            };
+            modelBuilder.Entity<User>().HasData(userData);
+
+            var usersStudents = new List<UserStudent>() 
+            { 
+                new UserStudent { UserId = 1, StudentId = 3},
+                new UserStudent { UserId = 2, StudentId = 2},
+                new UserStudent { UserId = 2, StudentId= 1}
+            };
+            modelBuilder.Entity<UserStudent>().HasData(usersStudents);
+            
         }
     }
 }

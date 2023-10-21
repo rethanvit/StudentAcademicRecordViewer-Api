@@ -1,0 +1,19 @@
+﻿Top 3:
+1. Authentication/Authorization using JWT token
+	- Allow the user only if he or she is in a role of Proctor/Admin
+	- Allow proctor to view onl students he supervise/guide
+	- Allow admin to view all students data
+	- Unit testing coverage - 80%
+	
+2. Add a student
+	- Allow adding student only after login
+
+
+
+Nice to have:
+1. Allow bulk import of students
+2. Show the list of students the proctor/admin is assigned with on login
+3. Allow student search using name/Id
+4. Implement authentication/authorization using OAuth/OpenId
+5. Seperate user and student DbContexts
+6. Add a table which would contain program Id and it correspoding first AcademicCalendarDetailId and last AcademicCalendarDetailId(if program was stopped for some reason).

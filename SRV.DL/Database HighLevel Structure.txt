@@ -1,0 +1,17 @@
+﻿Organization
+	-> Departments - FK - OrgnizationId
+				   - AK - Code, Name, OrganizationId
+		-> Programs - FK - DepartmentId
+					- FK - AcademicTermId(spring, fall, summer.. etc)
+					- AK - Code, Name, DepartmentId
+			-> Courses - FK - ProgramId
+					   - AK - Code, Level
+				-> OfferedCourses - PK - CourseId, AcademicCalendarDetailId
+								  - FK - AcademicCalendarDetailId
+								  - FK - CourseId
+					-> EnrolledCourses - PK - StudentId, CourseId, AcademicCalendarDetailId
+									   - FK - StudentId, CourseId, AcademicCalendarDetailId
+						-> Students - PK - StudentId
+									- FK - ProgramId
+									- FK - AcademicCalendarDetailStartId(AcademicCalendarDetailId)
+									- AK - StudentId, ProgramId, AcademicCalendarDetailStartId

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SRV.DL;
 
@@ -11,9 +12,10 @@ using SRV.DL;
 namespace SRV.DL.Migrations
 {
     [DbContext(typeof(StudentContext))]
-    partial class StudentContextModelSnapshot : ModelSnapshot
+    [Migration("20230927134754_addAcademicCalendarsForQuarterSystem")]
+    partial class addAcademicCalendarsForQuarterSystem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -890,33 +892,6 @@ namespace SRV.DL.Migrations
                         });
                 });
 
-            modelBuilder.Entity("SRV.DL.RefUserRole", b =>
-                {
-                    b.Property<string>("UserRoleCode")
-                        .HasMaxLength(4)
-                        .HasColumnType("nvarchar(4)");
-
-                    b.Property<string>("UserRoleName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("UserRoleCode");
-
-                    b.ToTable("RefUserRoles");
-
-                    b.HasData(
-                        new
-                        {
-                            UserRoleCode = "ADMN",
-                            UserRoleName = "Adminstrator"
-                        },
-                        new
-                        {
-                            UserRoleCode = "PROC",
-                            UserRoleName = "Proctor"
-                        });
-                });
-
             modelBuilder.Entity("SRV.DL.Student", b =>
                 {
                     b.Property<int>("StudentId")
@@ -946,8 +921,6 @@ namespace SRV.DL.Migrations
                         .HasColumnType("smalldatetime");
 
                     b.HasKey("StudentId");
-
-                    b.HasAlternateKey("StudentId", "ProgramId", "AcademicCalendarDetailStartId");
 
                     b.HasIndex("AcademicCalendarDetailStartId");
 
@@ -985,110 +958,6 @@ namespace SRV.DL.Migrations
                             ProgramId = 3,
                             StartDate = new DateTime(2021, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             StopDate = new DateTime(2079, 6, 6, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
-                });
-
-            modelBuilder.Entity("SRV.DL.User", b =>
-                {
-                    b.Property<int>("UserId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"), 1L, 1);
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ProgramId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserFirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserLastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserRoleCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(4)");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("UserId");
-
-                    b.HasIndex("ProgramId");
-
-                    b.HasIndex("UserRoleCode");
-
-                    b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = 1,
-                            Password = "Test1",
-                            ProgramId = 2,
-                            UserFirstName = "proc1Fname",
-                            UserLastName = "proc1Lname",
-                            UserRoleCode = "PROC",
-                            Username = "proc1"
-                        },
-                        new
-                        {
-                            UserId = 2,
-                            Password = "Test2",
-                            ProgramId = 3,
-                            UserFirstName = "proc2Fname",
-                            UserLastName = "proc2Lname",
-                            UserRoleCode = "PROC",
-                            Username = "proc2"
-                        },
-                        new
-                        {
-                            UserId = 3,
-                            Password = "Test3",
-                            ProgramId = 2,
-                            UserFirstName = "admin1Fname",
-                            UserLastName = "admin1Lname",
-                            UserRoleCode = "ADMN",
-                            Username = "admin1"
-                        });
-                });
-
-            modelBuilder.Entity("SRV.DL.UserStudent", b =>
-                {
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("StudentId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserStudent");
-
-                    b.HasData(
-                        new
-                        {
-                            StudentId = 3,
-                            UserId = 1
-                        },
-                        new
-                        {
-                            StudentId = 2,
-                            UserId = 2
-                        },
-                        new
-                        {
-                            StudentId = 1,
-                            UserId = 2
                         });
                 });
 
@@ -1212,40 +1081,6 @@ namespace SRV.DL.Migrations
                     b.Navigation("Program");
                 });
 
-            modelBuilder.Entity("SRV.DL.User", b =>
-                {
-                    b.HasOne("SRV.DL.Program", "Program")
-                        .WithMany("Users")
-                        .HasForeignKey("ProgramId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("SRV.DL.RefUserRole", "RefUserRole")
-                        .WithMany("Users")
-                        .HasForeignKey("UserRoleCode")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Program");
-
-                    b.Navigation("RefUserRole");
-                });
-
-            modelBuilder.Entity("SRV.DL.UserStudent", b =>
-                {
-                    b.HasOne("SRV.DL.Student", null)
-                        .WithMany()
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SRV.DL.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("SRV.DL.AcademicCalendar", b =>
                 {
                     b.Navigation("AcademicCalendarDetails");
@@ -1283,8 +1118,6 @@ namespace SRV.DL.Migrations
                     b.Navigation("Courses");
 
                     b.Navigation("Students");
-
-                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("SRV.DL.RefAcademicTerm", b =>
@@ -1292,11 +1125,6 @@ namespace SRV.DL.Migrations
                     b.Navigation("AcademicCalendars");
 
                     b.Navigation("Programs");
-                });
-
-            modelBuilder.Entity("SRV.DL.RefUserRole", b =>
-                {
-                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("SRV.DL.Student", b =>
