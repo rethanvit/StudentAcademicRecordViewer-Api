@@ -85,7 +85,7 @@ namespace SRV.Api.Services
             StudentWithCoursesDtoGet studentWithCourseDetailsDto = null;
             studentEntityWithCourses.ForEach(s =>
             {
-                if (studentWithCourseDetailsDto == null) studentWithCourseDetailsDto = new StudentWithCoursesDtoGet();
+                studentWithCourseDetailsDto ??= new StudentWithCoursesDtoGet();
                 if (!studentWithCourseDetailsDto.StudentId.Equals(s.StudentId))
                     studentWithCourseDetailsDto = new StudentWithCoursesDtoGet { StudentId = s.StudentId, FirstName = s.FirstName, LastName = s.LastName };
                 if (s.code != null)

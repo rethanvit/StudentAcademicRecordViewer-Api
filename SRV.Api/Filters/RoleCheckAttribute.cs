@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace SRV.Api.Filters
 {
-    public class RoleCheck : ActionFilterAttribute
+    public class RoleCheckAttribute : ActionFilterAttribute
     {
         private readonly string _role;
 
-        public RoleCheck(string role)
+        public RoleCheckAttribute(string role)
         {
             _role = role;
         }

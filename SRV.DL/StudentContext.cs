@@ -252,9 +252,9 @@ namespace SRV.DL
 
             var userData = new List<User>
             {
-                new User { UserId = 1, Username="proc1", UserFirstName="proc1Fname", UserLastName="proc1Lname", ProgramId = 2, Password="Test1", UserRoleCode = "PROC"},
-                new User { UserId = 2, Username="proc2", UserFirstName="proc2Fname", UserLastName="proc2Lname", ProgramId = 3, Password="Test2", UserRoleCode = "PROC"},
-                new User { UserId = 3, Username="admin1", UserFirstName="admin1Fname", UserLastName="admin1Lname", ProgramId = 2, Password="Test3", UserRoleCode = "ADMN"}
+                new User { UserId = 1, Username="proc1", UserFirstName="proc1Fname", UserLastName="proc1Lname", ProgramId = 2, Password="AQAAAAEAACcQAAAAENoo+chD6mjcEb4KhppCVcaSNq2ZDG+jFEfPoXp/2MRvVFTlt01DoVlLYJnnqjXVmg==", UserRoleCode = "PROC"},
+                new User { UserId = 2, Username="proc2", UserFirstName="proc2Fname", UserLastName="proc2Lname", ProgramId = 3, Password="AQAAAAEAACcQAAAAEDVJUxqIXkW86HMMdlRCUKqJMbu/La79nKkBJmrBzd3QUcveAH7MaolZXvcKn643ng==", UserRoleCode = "PROC"},
+                new User { UserId = 3, Username="admin1", UserFirstName="admin1Fname", UserLastName="admin1Lname", ProgramId = 2, Password="AQAAAAEAACcQAAAAEKqp8N+zUBxqi7vdtuE3Ic1NEoP0veLvvHvKpf2Ts0T6L7i5jdlzsPGAVq+vv7XPnA==", UserRoleCode = "ADMN"}
             };
             modelBuilder.Entity<User>().HasData(userData);
 
