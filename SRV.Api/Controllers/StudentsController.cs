@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SRV.Api.Filters;
 using SRV.Api.Models;
 using SRV.Api.Services;
 using SRV.DL;
@@ -91,6 +92,7 @@ namespace SRV.Api.Controllers
         }
 
         [HttpPost("addStudent")]
+        [RoleCheck(Constants.RoleAdmin)]
         public async Task<ActionResult<int>> AddStudent(AddStudentDto addStudent)
         {
             if(!_studentRepository.Get<AcademicCalendarDetail>(c => c.AcademicCalendarDetailId == addStudent.AcademicDetailsStartId).Any())
