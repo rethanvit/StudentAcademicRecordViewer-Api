@@ -9,12 +9,10 @@ namespace SRV.Api.Services
     public class StudentRepository : IStudentRepository
     {
         private readonly StudentContext _studentContext;
-        private readonly IMapper _mapper;
 
-        public StudentRepository(StudentContext studentContext, IMapper mapper)
+        public StudentRepository(StudentContext studentContext)
         {
             _studentContext = studentContext;
-            _mapper = mapper;
         }
 
         public async Task<StudentDtoForGet> GetStudentByIdAsync(int studentId)
@@ -55,14 +53,19 @@ namespace SRV.Api.Services
                        join studentEC in (from enrolledCourse in _studentContext.EnrolledCourses
                                           join academicCalendarDetail in _studentContext.AcademicCalendarDetails
                                           on enrolledCourse.AcademicCalendarDetailId equals academicCalendarDetail.AcademicCalendarDetailId
+
                                           join refAcademicCalendar in _studentContext.AcademicCalendars
                                           on academicCalendarDetail.AcademicCalendarId equals refAcademicCalendar.AcademicCalendarId
+
                                           join course in _studentContext.Courses
                                           on enrolledCourse.CourseId equals course.CourseId
+
                                           join program in _studentContext.Programs
                                           on course.ProgramId equals program.ProgramId
+
                                           join department in _studentContext.Departments
                                           on program.DepartmentId equals department.DepartmentId
+
                                           where enrolledCourse.StudentId == studentId
                                           select new { enrolledCourse.StudentId, departmentName = department.Name, course.Code, course.Level, courseName = course.Name, academicCalendarDetail.Year, termName = refAcademicCalendar.Name, enrolledCourse.Marks })
                         on student.StudentId equals studentEC.StudentId
@@ -109,9 +112,9 @@ namespace SRV.Api.Services
         {
             var academicCalendarDetailIdInWhichCourseWasOffered = await _studentContext.AcademicCalendarDetails.Join(_studentContext.AcademicCalendars, acd => acd.AcademicCalendarId, ac => ac.AcademicCalendarId, (acd, ac) => new { acd, ac })
                                                                        .Join(_studentContext.RefAcademicTerms, acdac => acdac.ac.AcademicTermId, at => at.AcademicTermId, (acdac, at) => new { acdac, at })
-                                                                       .Where(acdacat => acdacat.at.AcademicTermId == _studentContext.Programs.Single(p => p.Code.Equals(_studentContext.Students.Include(s => s.Program).Single(s => s.StudentId == studentId).Program.Code)).AcademicTermId &&
+                                                                       .Where(acdacat => acdacat.at.AcademicTermId == _studentContext.Students.Include(s => s.Program).Single(s => s.StudentId == studentId).Program.AcademicTermId &&
                                                                               acdacat.acdac.ac.Name.Equals(courseArgs.AcademicTerm) &&
-                                                                              acdacat.acdac.acd.AcademicCalendarDetailId >= _studentContext.Students.Include(s => s.AcademicCalendarDetail).Single(s => s.StudentId == studentId).AcademicCalendarDetail.AcademicCalendarDetailId &&
+                                                                              acdacat.acdac.acd.AcademicCalendarDetailId >= _studentContext.Students.Single(s => s.StudentId == studentId).AcademicCalendarDetailStartId &&
                                                                               acdacat.acdac.acd.Year == courseArgs.AcademicYear)
                                                                        .Select(acdacat => acdacat.acdac.acd.AcademicCalendarDetailId).SingleAsync();
 
@@ -300,38 +303,6 @@ namespace SRV.Api.Services
             }
 
             return listOfCoursesAndTerms;
-        }
-
-        private async Task<List<CourseYearAndTerm>> GetAademicYearsAndAcademicTermsACourseIsOffered(int studentId, int courseId)
-        {
-            var possibleYearsAndTermsACourseWasOffered = await _studentContext.AcademicCalendarDetails.Join(_studentContext.OfferedCourses, acd => acd.AcademicCalendarDetailId, oc => oc.AcademicCalendarDetailId, (acd, oc) => new { acd, oc })
-                                                                                                .Join(_studentContext.AcademicCalendars, acdoc => acdoc.acd.AcademicCalendarId, ac => ac.AcademicCalendarId, (acdoc, ac) => new { acdoc, ac })
-                                                                                                .Join(_studentContext.Programs, acdocac => acdocac.ac.AcademicTermId, p => p.AcademicTermId, (acdocac, p) => new { acdocac, p })
-                                                                                                .Where(acdocacp => acdocacp.acdocac.acdoc.oc.CourseId == courseId &&
-                                                                                                       acdocacp.acdocac.acdoc.oc.AcademicCalendarDetailId >= _studentContext.Students.Single(s => s.StudentId == studentId).AcademicCalendarDetailStartId &&
-                                                                                                       acdocacp.p.ProgramId == _studentContext.Students.Single(s => s.StudentId == studentId).ProgramId).ToListAsync();
-
-            var courseYearTerms = new List<CourseYearAndTerm>();
-            possibleYearsAndTermsACourseWasOffered.ForEach(acdocacp =>
-            {
-                if (!courseYearTerms.Any(item => item.CourseId == acdocacp.acdocac.acdoc.oc.CourseId))
-                {
-                    courseYearTerms.Add(new CourseYearAndTerm { CourseId = acdocacp.acdocac.acdoc.oc.CourseId, YearAndTerms = new List<YearAndTerm>() });
-                }
-
-                if (courseYearTerms.Any(item => item.CourseId == acdocacp.acdocac.acdoc.oc.CourseId && !item.YearAndTerms.Any(yat => yat.AcademicYear == acdocacp.acdocac.acdoc.acd.Year)))
-                {
-                    courseYearTerms.Single(item => item.CourseId == acdocacp.acdocac.acdoc.oc.CourseId).YearAndTerms.Add(new YearAndTerm { AcademicYear = acdocacp.acdocac.acdoc.acd.Year, AcademicTerms = new List<string>() });
-                }
-
-                if (courseYearTerms.Any(item => item.CourseId == acdocacp.acdocac.acdoc.oc.CourseId && item.YearAndTerms.Any(yat => yat.AcademicYear == acdocacp.acdocac.acdoc.acd.Year)))
-                {
-                    courseYearTerms.Single(item => item.CourseId == acdocacp.acdocac.acdoc.oc.CourseId).YearAndTerms.Single(yat => yat.AcademicYear == acdocacp.acdocac.acdoc.acd.Year).AcademicTerms.Add(acdocacp.acdocac.ac.Name);
-                }
-
-            }
-            );
-            return courseYearTerms;
         }
 
         public async Task<int> AddStudentCourse(int studentId, AddEnrolledCourseRequestDto addEnrolledCourseRequestDto)
