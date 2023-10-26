@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SRV.Api.Models;
 using SRV.DL;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace SRV.Api.Services
@@ -131,18 +132,18 @@ namespace SRV.Api.Services
 
         public async Task<List<YearAndTerm>> GetAademicYearsAndAcademicTermsACourseIsOffered(int studentId, int courseLevel, string courseCode)
         {
-            var possibleYearsAndTermsACourseWasOffered = await _studentContext.AcademicCalendarDetails.Join(_studentContext.OfferedCourses, acd => acd.AcademicCalendarDetailId, oc => oc.AcademicCalendarDetailId, (acd, oc) => new { acd, oc })
-                                                                                                .Join(_studentContext.AcademicCalendars, acdoc => acdoc.acd.AcademicCalendarId, ac => ac.AcademicCalendarId, (acdoc, ac) => new { acdoc, ac })
-                                                                                                .Where(acdocac => acdocac.acdoc.oc.CourseId == _studentContext.Courses.Single(c => c.Code.Equals(courseCode) && c.Level.Equals(courseLevel)).CourseId &&
-                                                                                                                  acdocac.acdoc.acd.AcademicCalendarDetailId >= _studentContext.Students.Single(s => s.StudentId == studentId).AcademicCalendarDetailStartId)
-                                                                                                .ToListAsync();
+            var possibleYearsAndTermsACourseWasOffered = await _studentContext.AcademicCalendarDetails
+                                                                .Join(_studentContext.OfferedCourses, acd => acd.AcademicCalendarDetailId, oc => oc.AcademicCalendarDetailId, (acd, oc) => new { acd, oc })
+                                                                .Join(_studentContext.AcademicCalendars, acdoc => acdoc.acd.AcademicCalendarId, ac => ac.AcademicCalendarId, (acdoc, ac) => new { acdoc, ac })
+                                                                .Where(acdocac => acdocac.acdoc.oc.CourseId == _studentContext.Courses.Single(c => c.Code.Equals(courseCode) && c.Level.Equals(courseLevel)).CourseId &&
+                                                                                  _studentContext.Courses.Single(c => c.CourseId == acdocac.acdoc.oc.CourseId).ProgramId == _studentContext.Students.Single(s => s.StudentId == studentId).ProgramId &&
+                                                                                  acdocac.acdoc.acd.AcademicCalendarDetailId >= _studentContext.Students.Single(s => s.StudentId == studentId).AcademicCalendarDetailStartId)
+                                                                .ToListAsync();
             var yearsAndTerms = new List<YearAndTerm>();
             possibleYearsAndTermsACourseWasOffered.ForEach(acdocac =>
             {
                 if (yearsAndTerms.Any(item => item.AcademicYear == acdocac.acdoc.acd.Year))
-                {
                     yearsAndTerms.Single(item => item.AcademicYear == acdocac.acdoc.acd.Year).AcademicTerms.Add(acdocac.ac.Name);
-                }
                 else
                     yearsAndTerms.Add(new YearAndTerm { AcademicYear = acdocac.acdoc.acd.Year, AcademicTerms = new List<string> { acdocac.ac.Name } });
             }

@@ -15,7 +15,7 @@ namespace SRV.Api.Tests
         {
             //Arrange
             var builder = new DbContextOptionsBuilder<StudentContext>();
-            builder.UseInMemoryDatabase("GetStudentByIdAsync");
+            builder.UseInMemoryDatabase("GetStudentByIdAsync1");
             var studentContext = new StudentContext(builder.Options);
 
             var programs = new List<Program> {
@@ -107,7 +107,7 @@ namespace SRV.Api.Tests
         {
             //Arrange
             var builder = new DbContextOptionsBuilder<StudentContext>();
-            builder.UseInMemoryDatabase("GetStudentByIdAsync");
+            builder.UseInMemoryDatabase("GetStudentByIdAsync2");
             var studentContext = new StudentContext(builder.Options);
 
             var programs = new List<Program> {
@@ -299,7 +299,7 @@ namespace SRV.Api.Tests
             };
 
             var builder = new DbContextOptionsBuilder<StudentContext>();
-            builder.UseInMemoryDatabase("GetStudentAndEnrolledCourseAsync");
+            builder.UseInMemoryDatabase("GetStudentAndEnrolledCourseAsync1");
             var studentContext = new StudentContext(builder.Options);
 
             studentContext.AddRange(organizations);
@@ -455,7 +455,7 @@ namespace SRV.Api.Tests
             };
 
             var builder = new DbContextOptionsBuilder<StudentContext>();
-            builder.UseInMemoryDatabase("GetStudentAndEnrolledCourseAsync");
+            builder.UseInMemoryDatabase("GetStudentAndEnrolledCourseAsync2");
             var studentContext = new StudentContext(builder.Options);
 
             studentContext.AddRange(organizations);
@@ -488,6 +488,7 @@ namespace SRV.Api.Tests
         [TestMethod]
         public async Task DeleteCoursesEnrolled_DeletesTheCourse_WhenPassedValidCourseDetailsOfTheStudent()
         {
+            //Arrange
             var academicCalendarDetails = new List<AcademicCalendarDetail> {
                 new AcademicCalendarDetail{
                     AcademicCalendarDetailId = 2,
@@ -582,7 +583,7 @@ namespace SRV.Api.Tests
             };
 
             var builder = new DbContextOptionsBuilder<StudentContext>();
-            builder.UseInMemoryDatabase("DeleteCoursesEnrolled");
+            builder.UseInMemoryDatabase("DeleteCoursesEnrolled1");
             var studentContext = new StudentContext(builder.Options);
 
             studentContext.AddRange(programs);
@@ -603,6 +604,7 @@ namespace SRV.Api.Tests
                 AcademicYear = 2020
             };
 
+            //Act
             await studentRepository.DeleteCoursesEnrolled(234, courseToBeDeleted);
 
             //Assert
@@ -610,5 +612,295 @@ namespace SRV.Api.Tests
             studentContext.EnrolledCourses.SingleOrDefault(ec => ec.CourseId == 2).Should().NotBeNull();
 
         }
+
+        [TestMethod]
+        public async Task TriSemester_GetAademicYearsAndAcademicTermsACourseIsOffered_ReturnsYearAndTermsTheCourseWasOfferedToStudent_WhenProvidedCourseDetails()
+        {
+            //Arrange
+            var academicCalendarDetails = new List<AcademicCalendarDetail> {
+                new AcademicCalendarDetail{
+                    AcademicCalendarDetailId = 2,
+                    AcademicCalendarId=2,
+                    Year = 2020,
+                    StartDate= new DateTime(2020,01,01),
+                    StopDate=new DateTime(2020,07,31)
+                },
+                new AcademicCalendarDetail{
+                    AcademicCalendarDetailId = 3,
+                    AcademicCalendarId=3,
+                    Year = 2020,
+                    StartDate= new DateTime(2020,08,01),
+                    StopDate=new DateTime(2020,12,31)
+                },
+                new AcademicCalendarDetail{
+                    AcademicCalendarDetailId = 4,
+                    AcademicCalendarId=4,
+                    Year = 2020,
+                    StartDate= new DateTime(2020,01,01),
+                    StopDate=new DateTime(2020,05,31)
+                },
+                new AcademicCalendarDetail{
+                    AcademicCalendarDetailId = 5,
+                    AcademicCalendarId=5,
+                    Year = 2020,
+                    StartDate= new DateTime(2020,06,01),
+                    StopDate=new DateTime(2020,07,31)
+                },
+                new AcademicCalendarDetail{
+                    AcademicCalendarDetailId = 6,
+                    AcademicCalendarId=6,
+                    Year = 2020,
+                    StartDate= new DateTime(2020,08,01),
+                    StopDate=new DateTime(2020,12,31)
+                }
+            };
+            var academicCalenders = new List<AcademicCalendar> {
+                new AcademicCalendar {
+                    AcademicCalendarId = 2,
+                    AcademicTermId=2,
+                    Name="Spring",
+                },
+                new AcademicCalendar {
+                    AcademicCalendarId=3,
+                    AcademicTermId=2,
+                    Name="Fall",
+                },
+                new AcademicCalendar {
+                    AcademicCalendarId=4,
+                    AcademicTermId=3,
+                    Name="Spring",
+                },
+                 new AcademicCalendar {
+                    AcademicCalendarId=5,
+                    AcademicTermId=3,
+                    Name="Summer",
+                }
+            };
+            var programs = new List<Program> {
+                new Program {
+                    ProgramId = 2,
+                    Code = "Prog2",
+                    Name = "TestProg2Name",
+                    AcademicTermId = 2,
+                    Active = true,
+                    DepartmentId = 2,
+                },
+                new Program {
+                    ProgramId = 3,
+                    Code = "Prog3",
+                    Name = "TestProg3Name",
+                    AcademicTermId = 3,
+                    Active = true,
+                    DepartmentId = 2,
+                }
+            };
+            var courses = new List<Course> {
+                new Course {
+                    CourseId = 2,
+                    Code = "C2",
+                    Name = "C2Name",
+                    Level = 101,
+                    ProgramId = 2
+                },
+                new Course {
+                    CourseId = 3,
+                    Code = "C3",
+                    Name = "C3Name",
+                    Level = 101,
+                    ProgramId = 3
+                },
+            };
+            var offeredCourses = new List<OfferedCourse>
+            {
+                new OfferedCourse {CourseId = 2, AcademicCalendarDetailId = 2},
+                new OfferedCourse {CourseId = 2, AcademicCalendarDetailId = 3},
+                new OfferedCourse {CourseId = 3, AcademicCalendarDetailId = 4},
+                new OfferedCourse {CourseId = 3, AcademicCalendarDetailId = 5},
+            };
+            var students = new List<Student> {
+                new Student{
+                    StudentId = 234,
+                    FirstName = "TestFName1",
+                    LastName = "TestLName1",
+                    ProgramId=3,
+                    AcademicCalendarDetailStartId = 2,
+                }
+            };
+
+
+            var builder = new DbContextOptionsBuilder<StudentContext>();
+            builder.UseInMemoryDatabase("GetAademicYearsAndAcademicTermsACourseIsOffered1");
+            var studentContext = new StudentContext(builder.Options);
+
+            studentContext.AddRange(programs);
+            studentContext.AddRange(students);
+            studentContext.AddRange(courses);
+            studentContext.AddRange(offeredCourses);
+            studentContext.AddRange(academicCalendarDetails);
+            studentContext.AddRange(academicCalenders);
+
+            studentContext.SaveChanges();
+            
+            //Act
+            var studentRepository = new StudentRepository(studentContext);
+            var result = await studentRepository.GetAademicYearsAndAcademicTermsACourseIsOffered(234, 101, "C3");
+
+            //Assert
+            var expectedResult = new List<YearAndTerm> { 
+                new YearAndTerm{ 
+                    AcademicYear = 2020,
+                    AcademicTerms = new List<string> {"Spring", "Summer"}
+                }
+            };
+
+            result.Should().BeEquivalentTo(expectedResult);
+
+        }
+
+        [TestMethod]
+        public async Task BiSemester_GetAademicYearsAndAcademicTermsACourseIsOffered_ReturnsYearAndTermsTheCourseWasOfferedToStudent_WhenProvidedCourseDetails()
+        {
+            //Arrange
+            var academicCalendarDetails = new List<AcademicCalendarDetail> {
+                new AcademicCalendarDetail{
+                    AcademicCalendarDetailId = 2,
+                    AcademicCalendarId=2,
+                    Year = 2020,
+                    StartDate= new DateTime(2020,01,01),
+                    StopDate=new DateTime(2020,07,31)
+                },
+                new AcademicCalendarDetail{
+                    AcademicCalendarDetailId = 3,
+                    AcademicCalendarId=3,
+                    Year = 2020,
+                    StartDate= new DateTime(2020,08,01),
+                    StopDate=new DateTime(2020,12,31)
+                },
+                new AcademicCalendarDetail{
+                    AcademicCalendarDetailId = 4,
+                    AcademicCalendarId=4,
+                    Year = 2020,
+                    StartDate= new DateTime(2020,01,01),
+                    StopDate=new DateTime(2020,05,31)
+                },
+                new AcademicCalendarDetail{
+                    AcademicCalendarDetailId = 5,
+                    AcademicCalendarId=5,
+                    Year = 2020,
+                    StartDate= new DateTime(2020,06,01),
+                    StopDate=new DateTime(2020,07,31)
+                },
+                new AcademicCalendarDetail{
+                    AcademicCalendarDetailId = 6,
+                    AcademicCalendarId=6,
+                    Year = 2020,
+                    StartDate= new DateTime(2020,08,01),
+                    StopDate=new DateTime(2020,12,31)
+                }
+            };
+            var academicCalenders = new List<AcademicCalendar> {
+                new AcademicCalendar {
+                    AcademicCalendarId = 2,
+                    AcademicTermId=2,
+                    Name="Spring",
+                },
+                new AcademicCalendar {
+                    AcademicCalendarId=3,
+                    AcademicTermId=2,
+                    Name="Fall",
+                },
+                new AcademicCalendar {
+                    AcademicCalendarId=4,
+                    AcademicTermId=3,
+                    Name="Spring",
+                },
+                 new AcademicCalendar {
+                    AcademicCalendarId=5,
+                    AcademicTermId=3,
+                    Name="Summer",
+                }
+            };
+            var programs = new List<Program> {
+                new Program {
+                    ProgramId = 2,
+                    Code = "Prog2",
+                    Name = "TestProg2Name",
+                    AcademicTermId = 2,
+                    Active = true,
+                    DepartmentId = 2,
+                },
+                new Program {
+                    ProgramId = 3,
+                    Code = "Prog3",
+                    Name = "TestProg3Name",
+                    AcademicTermId = 3,
+                    Active = true,
+                    DepartmentId = 2,
+                }
+            };
+            var courses = new List<Course> {
+                new Course {
+                    CourseId = 2,
+                    Code = "C2",
+                    Name = "C2Name",
+                    Level = 101,
+                    ProgramId = 2
+                },
+                new Course {
+                    CourseId = 3,
+                    Code = "C3",
+                    Name = "C3Name",
+                    Level = 101,
+                    ProgramId = 3
+                },
+            };
+            var offeredCourses = new List<OfferedCourse>
+            {
+                new OfferedCourse {CourseId = 2, AcademicCalendarDetailId = 2},
+                new OfferedCourse {CourseId = 2, AcademicCalendarDetailId = 3},
+                new OfferedCourse {CourseId = 3, AcademicCalendarDetailId = 4},
+                new OfferedCourse {CourseId = 3, AcademicCalendarDetailId = 5},
+            };
+            var students = new List<Student> {
+                new Student{
+                    StudentId = 234,
+                    FirstName = "TestFName1",
+                    LastName = "TestLName1",
+                    ProgramId=2,
+                    AcademicCalendarDetailStartId = 2,
+                }
+            };
+
+
+            var builder = new DbContextOptionsBuilder<StudentContext>();
+            builder.UseInMemoryDatabase("GetAademicYearsAndAcademicTermsACourseIsOffered2");
+            var studentContext = new StudentContext(builder.Options);
+
+            studentContext.AddRange(programs);
+            studentContext.AddRange(students);
+            studentContext.AddRange(courses);
+            studentContext.AddRange(offeredCourses);
+            studentContext.AddRange(academicCalendarDetails);
+            studentContext.AddRange(academicCalenders);
+
+            studentContext.SaveChanges();
+
+            //Act
+            var studentRepository = new StudentRepository(studentContext);
+            var result = await studentRepository.GetAademicYearsAndAcademicTermsACourseIsOffered(234, 101, "C2");
+
+            //Assert
+            var expectedResult = new List<YearAndTerm> {
+                new YearAndTerm{
+                    AcademicYear = 2020,
+                    AcademicTerms = new List<string> {"Spring", "Fall"}
+                }
+            };
+
+            result.Should().BeEquivalentTo(expectedResult);
+
+        }
+
+
     }
 }
