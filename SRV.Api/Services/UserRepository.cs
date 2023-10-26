@@ -16,10 +16,5 @@ namespace SRV.Api.Services
         {
             return await _studentContext.Users.SingleAsync(u => u.Username == userName);
         }
-
-        public async Task<User> ValidateUserCredentialAsync(string userName, string password)
-        {
-            return await _studentContext.Users.SingleOrDefaultAsync(u => u.Username == userName && u.Password == password);
-        }
     }
 }
