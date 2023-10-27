@@ -153,10 +153,11 @@ namespace SRV.Api.Services
 
         public async Task UpdatStudentEnrolledCourse(int studentId, CurrentAndNewCourseDetails courseArgs)
         {
-            var currentAcademicCalendarDetailId = await _studentContext.OfferedCourses.Join(_studentContext.AcademicCalendarDetails, oc => oc.AcademicCalendarDetailId, acd => acd.AcademicCalendarDetailId, (oc, acd) => new { oc, acd })
+            var currentAcademicCalendarDetailId = await _studentContext.OfferedCourses
+                                                        .Join(_studentContext.AcademicCalendarDetails, oc => oc.AcademicCalendarDetailId, acd => acd.AcademicCalendarDetailId, (oc, acd) => new { oc, acd })
                                                         .Join(_studentContext.AcademicCalendars, ocacd => ocacd.acd.AcademicCalendarId, ac => ac.AcademicCalendarId, (ocacd, ac) => new { ocacd, ac })
                                                         .Join(_studentContext.Courses, ocacdac => ocacdac.ocacd.oc.CourseId, c => c.CourseId, (ocacdac, c) => new { ocacdac, c })
-                                                        .Where(ocacdacc => ocacdacc.ocacdac.ac.AcademicTermId == _studentContext.Programs.Single(p => p.Code.Equals(_studentContext.Students.Include(s => s.Program).Single(s => s.StudentId == studentId).Program.Code)).AcademicTermId &&
+                                                        .Where(ocacdacc => ocacdacc.ocacdac.ac.AcademicTermId == _studentContext.Students.Include(s => s.Program).Single(s => s.StudentId == studentId).Program.AcademicTermId &&
                                                                           ocacdacc.ocacdac.ac.Name.Equals(courseArgs.CurrentAcademicTerm) &&
                                                                           ocacdacc.ocacdac.ocacd.acd.AcademicCalendarDetailId >= _studentContext.Students.Single(s => s.StudentId == studentId).AcademicCalendarDetailStartId &&
                                                                           ocacdacc.ocacdac.ocacd.acd.Year == courseArgs.CurrentAcademicYear &&
@@ -168,16 +169,17 @@ namespace SRV.Api.Services
 
             if (courseArgs.CurrentAcademicTerm != courseArgs.UpdatedAcademicTerm || courseArgs.CurrentAcademicYear != courseArgs.UpdatedAcademicYear)
             {
-                var updatedAcademicCalendarDetailId = await _studentContext.OfferedCourses.Join(_studentContext.AcademicCalendarDetails, oc => oc.AcademicCalendarDetailId, acd => acd.AcademicCalendarDetailId, (oc, acd) => new { oc, acd })
-                                            .Join(_studentContext.AcademicCalendars, ocacd => ocacd.acd.AcademicCalendarId, ac => ac.AcademicCalendarId, (ocacd, ac) => new { ocacd, ac })
-                                            .Join(_studentContext.Courses, ocacdac => ocacdac.ocacd.oc.CourseId, c => c.CourseId, (ocacdac, c) => new { ocacdac, c })
-                                            .Where(ocacdacc => ocacdacc.ocacdac.ac.AcademicTermId == _studentContext.Programs.Single(p => p.Code.Equals(_studentContext.Students.Include(s => s.Program).Single(s => s.StudentId == studentId).Program.Code)).AcademicTermId &&
-                                                              ocacdacc.ocacdac.ac.Name.Equals(courseArgs.UpdatedAcademicTerm) &&
-                                                              ocacdacc.ocacdac.ocacd.acd.AcademicCalendarDetailId >= _studentContext.Students.Single(s => s.StudentId == studentId).AcademicCalendarDetailStartId &&
-                                                              ocacdacc.ocacdac.ocacd.acd.Year == courseArgs.UpdatedAcademicYear &&
-                                                              ocacdacc.c.Code.Equals(courseArgs.CourseCode) &&
-                                                              ocacdacc.c.Level == courseArgs.CourseLevel)
-                                            .Select(ocacdacc => ocacdacc.ocacdac.ocacd.acd.AcademicCalendarDetailId).SingleAsync();
+                var updatedAcademicCalendarDetailId = await _studentContext.OfferedCourses
+                                                            .Join(_studentContext.AcademicCalendarDetails, oc => oc.AcademicCalendarDetailId, acd => acd.AcademicCalendarDetailId, (oc, acd) => new { oc, acd })
+                                                            .Join(_studentContext.AcademicCalendars, ocacd => ocacd.acd.AcademicCalendarId, ac => ac.AcademicCalendarId, (ocacd, ac) => new { ocacd, ac })
+                                                            .Join(_studentContext.Courses, ocacdac => ocacdac.ocacd.oc.CourseId, c => c.CourseId, (ocacdac, c) => new { ocacdac, c })
+                                                            .Where(ocacdacc => ocacdacc.ocacdac.ac.AcademicTermId == _studentContext.Students.Include(s => s.Program).Single(s => s.StudentId == studentId).Program.AcademicTermId &&
+                                                                              ocacdacc.ocacdac.ac.Name.Equals(courseArgs.UpdatedAcademicTerm) &&
+                                                                              ocacdacc.ocacdac.ocacd.acd.AcademicCalendarDetailId >= _studentContext.Students.Single(s => s.StudentId == studentId).AcademicCalendarDetailStartId &&
+                                                                              ocacdacc.ocacdac.ocacd.acd.Year == courseArgs.UpdatedAcademicYear &&
+                                                                              ocacdacc.c.Code.Equals(courseArgs.CourseCode) &&
+                                                                              ocacdacc.c.Level == courseArgs.CourseLevel)
+                                                            .Select(ocacdacc => ocacdacc.ocacdac.ocacd.acd.AcademicCalendarDetailId).SingleAsync();
 
                 var studentCourseUpdate = await _studentContext.EnrolledCourses.SingleAsync(ec => ec.StudentId == studentId && ec.AcademicCalendarDetailId == currentAcademicCalendarDetailId && ec.CourseId == course.CourseId);
                 _studentContext.Remove(studentCourseUpdate);
@@ -266,30 +268,31 @@ namespace SRV.Api.Services
 
         public async Task<List<CourseDto>> GetCoursesThatTheStudentCouldHaveEnrolled(int studentId)
         {
+            //DO NOT JOIN Program table on AcademicTermId. It will be an issue when you have multiple programs with same AcademicTermId. Fix it.
+            //The unit test with comment //AcademicTermId will fail with previous version of the below query. DOUBLE check other queries with join on AcademicTermId
             var coursesThatStudentCouldHaveEnrolledFor = await _studentContext.OfferedCourses.Join(_studentContext.Courses, oc => oc.CourseId, c => c.CourseId, (oc, c) => new { oc, c })
-                                 .Join(_studentContext.AcademicCalendarDetails, occ => occ.oc.AcademicCalendarDetailId, acd => acd.AcademicCalendarDetailId, (occ, acd) => new { occ, acd })
-                                 .Join(_studentContext.AcademicCalendars, occacd => occacd.acd.AcademicCalendarId, ac => ac.AcademicCalendarId, (occacd, ac) => new { occacd, ac })
-                                 .Join(_studentContext.RefAcademicTerms, occacdac => occacdac.ac.AcademicTermId, at => at.AcademicTermId, (occacdac, at) => new { occacdac, at })
-                                 .Join(_studentContext.Programs, occacdacat => occacdacat.occacdac.ac.AcademicTermId, p => p.AcademicTermId, (occacdacat, p) => new { occacdacat, p })
-                                 .Where(occacdacatp => occacdacatp.occacdacat.occacdac.occacd.occ.c.ProgramId == _studentContext.Students.Single(s => s.StudentId == studentId).ProgramId &&
-                                        occacdacatp.occacdacat.occacdac.occacd.acd.AcademicCalendarDetailId >= _studentContext.Students.Single(s => s.StudentId == studentId).AcademicCalendarDetailStartId &&
-                                        !_studentContext.EnrolledCourses.Where(s => s.StudentId == studentId).Select(cid => cid.CourseId).ToList().Contains(occacdacatp.occacdacat.occacdac.occacd.occ.oc.CourseId))
-                                 .Select(occacdacatp => new
-                                 {
-                                     CourseId = occacdacatp.occacdacat.occacdac.occacd.occ.c.CourseId,
-                                     Code = occacdacatp.occacdacat.occacdac.occacd.occ.c.Code,
-                                     Level = occacdacatp.occacdacat.occacdac.occacd.occ.c.Level,
-                                     Name = occacdacatp.occacdacat.occacdac.occacd.occ.c.Name,
-                                     Term = occacdacatp.occacdacat.occacdac.ac.Name,
-                                     Year = occacdacatp.occacdacat.occacdac.occacd.acd.Year
-                                 }).ToListAsync();
+                                             .Join(_studentContext.AcademicCalendarDetails, occ => occ.oc.AcademicCalendarDetailId, acd => acd.AcademicCalendarDetailId, (occ, acd) => new { occ, acd })
+                                             .Join(_studentContext.AcademicCalendars, occacd => occacd.acd.AcademicCalendarId, ac => ac.AcademicCalendarId, (occacd, ac) => new { occacd, ac })
+                                             .Where(occacdac => occacdac.occacd.occ.c.ProgramId == _studentContext.Students.Single(s => s.StudentId == studentId).ProgramId &&
+                                                    occacdac.occacd.acd.AcademicCalendarDetailId >= _studentContext.Students.Single(s => s.StudentId == studentId).AcademicCalendarDetailStartId &&
+                                                    !_studentContext.EnrolledCourses.Where(s => s.StudentId == studentId).Select(cid => cid.CourseId).ToList().Contains(occacdac.occacd.occ.oc.CourseId))
+                                             .Select(occacdac => new
+                                             {
+                                                 CourseId = occacdac.occacd.occ.c.CourseId,
+                                                 Code = occacdac.occacd.occ.c.Code,
+                                                 Level = occacdac.occacd.occ.c.Level,
+                                                 Name = occacdac.occacd.occ.c.Name,
+                                                 Term = occacdac.ac.Name,
+                                                 Year = occacdac.occacd.acd.Year
+                                             })
+                                             .ToListAsync();
 
             var listOfCoursesAndTerms = new List<CourseDto>();
             foreach (var course in coursesThatStudentCouldHaveEnrolledFor)
             {
                 if (!listOfCoursesAndTerms.Any(item => item.CourseId == course.CourseId))
                 {
-                    listOfCoursesAndTerms.Add(new CourseDto{CourseId = course.CourseId, Code = course.Code, Level = course.Level, Name = course.Name, YearAndTerms = new List<YearAndTerm>() });
+                    listOfCoursesAndTerms.Add(new CourseDto { CourseId = course.CourseId, Code = course.Code, Level = course.Level, Name = course.Name, YearAndTerms = new List<YearAndTerm>() });
                 }
 
                 if (listOfCoursesAndTerms.Any(item => item.CourseId == course.CourseId && !item.YearAndTerms.Any(yat => yat.AcademicYear == course.Year)))
