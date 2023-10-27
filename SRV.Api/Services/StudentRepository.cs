@@ -311,13 +311,15 @@ namespace SRV.Api.Services
 
         public async Task<int> AddStudentCourse(int studentId, AddEnrolledCourseRequestDto addEnrolledCourseRequestDto)
         {
+            //DO NOT JOIN Program table on AcademicTermId. It will be an issue when you have multiple programs with same AcademicTermId. Fix it.
+            //The unit test with comment //AcademicTermId will fail with previous version of the below query. DOUBLE check other queries with join on AcademicTermId
             var academicCalendarDetailId = await _studentContext.OfferedCourses.Join(_studentContext.AcademicCalendarDetails, oc => oc.AcademicCalendarDetailId, acd => acd.AcademicCalendarDetailId, (oc, acd) => new { oc, acd })
                                                  .Join(_studentContext.AcademicCalendars, ocacd => ocacd.acd.AcademicCalendarId, ac => ac.AcademicCalendarId, (ocacd, ac) => new { ocacd, ac })
-                                                 .Join(_studentContext.Programs, ocacdac => ocacdac.ac.AcademicTermId, p => p.AcademicTermId, (ocacdac, p) => new { ocacdac, p })
-                                                 .Where(ocacdacp => ocacdacp.ocacdac.ocacd.acd.AcademicCalendarDetailId >= _studentContext.Students.Single(s => s.StudentId == studentId).AcademicCalendarDetailStartId
-                                                        && ocacdacp.ocacdac.ocacd.acd.Year == addEnrolledCourseRequestDto.year
-                                                        && ocacdacp.ocacdac.ocacd.oc.CourseId == addEnrolledCourseRequestDto.courseId
-                                                        && ocacdacp.ocacdac.ac.Name.Equals(addEnrolledCourseRequestDto.term)).Select(ocacdacp => ocacdacp.ocacdac.ocacd.acd.AcademicCalendarDetailId).SingleAsync();
+                                                 .Where(ocacdac => ocacdac.ocacd.acd.AcademicCalendarDetailId >= _studentContext.Students.Single(s => s.StudentId == studentId).AcademicCalendarDetailStartId &&
+                                                        _studentContext.Students.Single(s => s.StudentId == studentId).ProgramId == ocacdac.ocacd.oc.Course.ProgramId
+                                                        && ocacdac.ocacd.acd.Year == addEnrolledCourseRequestDto.year
+                                                        && ocacdac.ocacd.oc.CourseId == addEnrolledCourseRequestDto.courseId
+                                                        && ocacdac.ac.Name.Equals(addEnrolledCourseRequestDto.term)).Select(ocacdac => ocacdac.ocacd.acd.AcademicCalendarDetailId).SingleAsync();
 
 
 
