@@ -2127,5 +2127,369 @@ namespace SRV.Api.Tests
             
         }
 
+        [TestMethod]
+        public async Task GetAcademicCalendarDetailsByAcademicTermId_ReturnsAcademicDetailsOfThePrrogram()
+        {
+            //Arrange
+            var academicCalenders = new List<AcademicCalendar> {
+                new AcademicCalendar {
+                    AcademicCalendarId = 2,
+                    AcademicTermId=2,
+                    Name="Spring",
+                },
+                new AcademicCalendar {
+                    AcademicCalendarId=3,
+                    AcademicTermId=2,
+                    Name="Fall",
+                },
+                new AcademicCalendar {
+                    AcademicCalendarId=4,
+                    AcademicTermId=3,
+                    Name="Spring",
+                },
+                 new AcademicCalendar {
+                    AcademicCalendarId=5,
+                    AcademicTermId=3,
+                    Name="Summer",
+                },
+                 new AcademicCalendar {
+                    AcademicCalendarId=6,
+                    AcademicTermId=3,
+                    Name="Fall",
+                }
+            };
+            var academicCalendarDetails = new List<AcademicCalendarDetail> {
+                new AcademicCalendarDetail{
+                    AcademicCalendarDetailId = 2,
+                    AcademicCalendarId=2,
+                    Year = 2020,
+                    StartDate= new DateTime(2020,01,01),
+                    StopDate=new DateTime(2020,07,31)
+                },
+                new AcademicCalendarDetail{
+                    AcademicCalendarDetailId = 3,
+                    AcademicCalendarId=3,
+                    Year = 2020,
+                    StartDate= new DateTime(2020,08,01),
+                    StopDate=new DateTime(2020,12,31)
+                },
+                new AcademicCalendarDetail{
+                    AcademicCalendarDetailId = 4,
+                    AcademicCalendarId=4,
+                    Year = 2020,
+                    StartDate= new DateTime(2020,01,01),
+                    StopDate=new DateTime(2020,05,31)
+                },
+                new AcademicCalendarDetail{
+                    AcademicCalendarDetailId = 5,
+                    AcademicCalendarId=5,
+                    Year = 2020,
+                    StartDate= new DateTime(2020,06,01),
+                    StopDate=new DateTime(2020,07,31)
+                },
+                new AcademicCalendarDetail{
+                    AcademicCalendarDetailId = 6,
+                    AcademicCalendarId=6,
+                    Year = 2020,
+                    StartDate= new DateTime(2020,08,01),
+                    StopDate=new DateTime(2020,12,31)
+                }
+            };
+            var programs = new List<Program> {
+                new Program {
+                    ProgramId = 2,
+                    Code = "Prog2",
+                    Name = "TestProg2Name",
+                    AcademicTermId = 2,
+                    Active = true,
+                    DepartmentId = 2,
+                },
+                new Program {
+                    ProgramId = 3,
+                    Code = "Prog3",
+                    Name = "TestProg3Name",
+                    AcademicTermId = 3,
+                    Active = true,
+                    DepartmentId = 2,
+                },
+                new Program {
+                    ProgramId = 4,
+                    Code = "Prog4",
+                    Name = "TestProg4Name",
+                    AcademicTermId = 3,
+                    Active = true,
+                    DepartmentId = 2,
+                }
+            };
+
+            var builder = new DbContextOptionsBuilder<StudentContext>();
+            builder.UseInMemoryDatabase("GetAcademicCalendarDetailsByAcademicTermId1");
+            var studentContext = new StudentContext(builder.Options);
+
+            studentContext.AddRange(programs);
+            studentContext.AddRange(academicCalendarDetails);
+            studentContext.AddRange(academicCalenders);
+            studentContext.SaveChanges();
+
+            //Act
+            var studentRepository = new StudentRepository(studentContext);
+            var result = await studentRepository.GetAcademicCalendarDetailsByAcademicTermId(4);
+
+            //Assert
+            var expectedAcademicCalendarDetails = new List<AcademicCalendarDetailOptionsDto> { 
+                new AcademicCalendarDetailOptionsDto { 
+                    AcademicCalendarDetailId = 4,
+                    StartDate =new DateTime(2020,01,01),
+                    Term = "Spring",
+                    Year = 2020                    
+                },
+                new AcademicCalendarDetailOptionsDto {
+                    AcademicCalendarDetailId = 5,
+                    StartDate =new DateTime(2020,06,01),
+                    Term = "Summer",
+                    Year = 2020
+                },
+                new AcademicCalendarDetailOptionsDto {
+                    AcademicCalendarDetailId = 6,
+                    StartDate =new DateTime(2020,08,01),
+                    Term = "Fall",
+                    Year = 2020
+                }
+            };
+
+            result.Should().BeEquivalentTo(expectedAcademicCalendarDetails);
+        }
+
+        [TestMethod]
+        public async Task AddStudent_ReturnsTheStudentIdOfTheStudentAdded_WhenSuccessfullyAddedTheStudent()
+        {
+
+            //Arrange
+            var academicCalendarDetails = new List<AcademicCalendarDetail> {
+                new AcademicCalendarDetail{
+                    AcademicCalendarDetailId = 2,
+                    AcademicCalendarId=2,
+                    Year = 2020,
+                    StartDate= new DateTime(2020,01,01),
+                    StopDate=new DateTime(2020,07,31)
+                },
+                new AcademicCalendarDetail{
+                    AcademicCalendarDetailId = 3,
+                    AcademicCalendarId=3,
+                    Year = 2020,
+                    StartDate= new DateTime(2020,08,01),
+                    StopDate=new DateTime(2020,12,31)
+                },
+                new AcademicCalendarDetail{
+                    AcademicCalendarDetailId = 4,
+                    AcademicCalendarId=4,
+                    Year = 2020,
+                    StartDate= new DateTime(2020,01,01),
+                    StopDate=new DateTime(2020,05,31)
+                },
+                new AcademicCalendarDetail{
+                    AcademicCalendarDetailId = 5,
+                    AcademicCalendarId=5,
+                    Year = 2020,
+                    StartDate= new DateTime(2020,06,01),
+                    StopDate=new DateTime(2020,07,31)
+                },
+                new AcademicCalendarDetail{
+                    AcademicCalendarDetailId = 6,
+                    AcademicCalendarId=6,
+                    Year = 2020,
+                    StartDate= new DateTime(2020,08,01),
+                    StopDate=new DateTime(2020,12,31)
+                }
+            };
+            var students = new List<Student>();
+
+            var builder = new DbContextOptionsBuilder<StudentContext>();
+            builder.UseInMemoryDatabase("AddStudent1");
+            var studentContext = new StudentContext(builder.Options);
+
+            studentContext.AddRange(students);
+            studentContext.AddRange(academicCalendarDetails);
+            studentContext.SaveChanges();
+
+            //Act
+            var studentRepository = new StudentRepository(studentContext);
+            var result = await studentRepository.AddStudent(new AddStudentDto { 
+                AcademicDetailsStartId = 4,
+                ProgramId = 3,
+                FirstName = "TestFName",
+                LastName = "TestLName"
+            });
+
+            //Assert
+            result.Should().Be(1);
+            studentContext.Students.SingleOrDefault(s => s.FirstName == "TestFName" && s.AcademicCalendarDetailStartId == 4 && s.StartDate == new DateTime(2020, 01,01)).Should().NotBeNull();
+        }
+
+        [TestMethod]
+        public async Task GetProgramsByDepartmentId_ReturnsProgramsInTheDepartment_WhenDepartmentIdIsProvided()
+        {
+            //Arrange
+            var programs = new List<Program> {
+                new Program {
+                    ProgramId = 2,
+                    Code = "Prog2",
+                    Name = "TestProg2Name",
+                    AcademicTermId = 2,
+                    Active = true,
+                    DepartmentId = 2,
+                },
+                new Program {
+                    ProgramId = 3,
+                    Code = "Prog3",
+                    Name = "TestProg3Name",
+                    AcademicTermId = 3,
+                    Active = true,
+                    DepartmentId = 2,
+                },
+                new Program {
+                    ProgramId = 4,
+                    Code = "Prog4",
+                    Name = "TestProg4Name",
+                    AcademicTermId = 3,
+                    Active = true,
+                    DepartmentId = 3,
+                }
+            };
+
+            var builder = new DbContextOptionsBuilder<StudentContext>();
+            builder.UseInMemoryDatabase("GetProgramsByDepartmentId1");
+            var studentContext = new StudentContext(builder.Options);
+
+            studentContext.AddRange(programs);
+            studentContext.SaveChanges();
+
+            //Act
+            var studentRepository = new StudentRepository(studentContext);
+            var result = await studentRepository.GetProgramsByDepartmentId(2);
+
+            //Assert
+            var expectedProgramData = new List<ProgramDto> {
+                new ProgramDto{ 
+                    Code = "Prog3",
+                    Name = "TestProg3Name",
+                    ProgramId = 3
+                },
+                new ProgramDto{
+                    Code = "Prog2",
+                    Name = "TestProg2Name",
+                    ProgramId = 2
+                }
+            };
+
+            result.Should().BeEquivalentTo(expectedProgramData);
+
+        }
+
+        [TestMethod]
+        public async Task GetOrganizations_ReturnListOfAllOrgnizations()
+        {
+            //Arrange
+            var organizations = new List<Organization> { 
+                new Organization { 
+                    Active = true,
+                    Name = "TestOrg1Name",
+                    OrganizationId = 1,
+                    StartDate = DateTime.Today,
+                    StopDate = DateTime.Today.AddDays(1),
+                },
+                new Organization {
+                    Active = true,
+                    Name = "TestOrg2Name",
+                    OrganizationId = 2,
+                    StartDate = DateTime.Today,
+                    StopDate = DateTime.Today.AddDays(1),
+                }
+            };
+
+            var builder = new DbContextOptionsBuilder<StudentContext>();
+            builder.UseInMemoryDatabase("GetOrganizations1");
+            var studentContext = new StudentContext(builder.Options);
+
+            studentContext.AddRange(organizations);
+            studentContext.SaveChanges();
+
+            //Act
+            var studentRepository = new StudentRepository(studentContext);
+            var result = await studentRepository.GetOrganizations();
+
+            //Assert
+            var expectedOrgs = new List<OrganizationDto> { 
+                new OrganizationDto{ 
+                    OrganizationId = 1,
+                    Active = true,
+                    Name = "TestOrg1Name",
+                    StartDate = DateTime.Today,
+                    StopDate = DateTime.Today.AddDays(1)
+                },
+                new OrganizationDto{
+                    OrganizationId = 2,
+                    Active = true,
+                    Name = "TestOrg2Name",
+                    StartDate = DateTime.Today,
+                    StopDate = DateTime.Today.AddDays(1)
+                },
+            };
+
+            result.Should().BeEquivalentTo(expectedOrgs);
+
+        }
+
+        [TestMethod]
+        public async Task GetDepartmentsbyOrganizationId_ReturnsListOfDepartmentsInAOrganization_WhenOrgnizationIdIsProvided()
+        {
+            //Arrange
+            var departments = new List<Department> {
+                new Department{
+                    DepartmentId=1,
+                    Code="DEP1",
+                    Active=true,
+                    Name= "DEPName1",
+                    StartDate= DateTime.Today,
+                    StopDate=DateTime.Today.AddDays(1),
+                    OrganizationId=1,
+                },
+                new Department{
+                    DepartmentId=2,
+                    Code="DEP2",
+                    Active=true,
+                    Name= "DEPName2",
+                    StartDate= DateTime.Today,
+                    StopDate=DateTime.Today.AddDays(1),
+                    OrganizationId=2,
+                }
+            };
+
+            var builder = new DbContextOptionsBuilder<StudentContext>();
+            builder.UseInMemoryDatabase("GetOrganizations1");
+            var studentContext = new StudentContext(builder.Options);
+
+            studentContext.AddRange(departments);
+            studentContext.SaveChanges();
+
+            //Act
+            var studentRepository = new StudentRepository(studentContext);
+            var result = await studentRepository.GetDepartmentsbyOrganizationId(2);
+
+            //Assert
+            var expectedDepartments = new List<DepartmentDto> { 
+                new DepartmentDto{ 
+                    Code = "DEP2",
+                    DepartmentId = 2,
+                    Name = "DEPName2",
+                    StartDate = DateTime.Today,
+                    StopDate = DateTime.Today.AddDays(1)
+                }
+            };
+
+            result.Should().BeEquivalentTo(expectedDepartments);
+
+        }
+
     }
 }
