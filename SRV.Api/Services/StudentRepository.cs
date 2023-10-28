@@ -157,7 +157,7 @@ namespace SRV.Api.Services
                                                         .Join(_studentContext.AcademicCalendarDetails, oc => oc.AcademicCalendarDetailId, acd => acd.AcademicCalendarDetailId, (oc, acd) => new { oc, acd })
                                                         .Join(_studentContext.AcademicCalendars, ocacd => ocacd.acd.AcademicCalendarId, ac => ac.AcademicCalendarId, (ocacd, ac) => new { ocacd, ac })
                                                         .Join(_studentContext.Courses, ocacdac => ocacdac.ocacd.oc.CourseId, c => c.CourseId, (ocacdac, c) => new { ocacdac, c })
-                                                        .Where(ocacdacc => ocacdacc.ocacdac.ac.AcademicTermId == _studentContext.Students.Include(s => s.Program).Single(s => s.StudentId == studentId).Program.AcademicTermId &&
+                                                        .Where(ocacdacc => ocacdacc.c.ProgramId == _studentContext.Students.Include(s => s.Program).Single(s => s.StudentId == studentId).ProgramId &&
                                                                           ocacdacc.ocacdac.ac.Name.Equals(courseArgs.CurrentAcademicTerm) &&
                                                                           ocacdacc.ocacdac.ocacd.acd.AcademicCalendarDetailId >= _studentContext.Students.Single(s => s.StudentId == studentId).AcademicCalendarDetailStartId &&
                                                                           ocacdacc.ocacdac.ocacd.acd.Year == courseArgs.CurrentAcademicYear &&
@@ -173,7 +173,7 @@ namespace SRV.Api.Services
                                                             .Join(_studentContext.AcademicCalendarDetails, oc => oc.AcademicCalendarDetailId, acd => acd.AcademicCalendarDetailId, (oc, acd) => new { oc, acd })
                                                             .Join(_studentContext.AcademicCalendars, ocacd => ocacd.acd.AcademicCalendarId, ac => ac.AcademicCalendarId, (ocacd, ac) => new { ocacd, ac })
                                                             .Join(_studentContext.Courses, ocacdac => ocacdac.ocacd.oc.CourseId, c => c.CourseId, (ocacdac, c) => new { ocacdac, c })
-                                                            .Where(ocacdacc => ocacdacc.ocacdac.ac.AcademicTermId == _studentContext.Students.Include(s => s.Program).Single(s => s.StudentId == studentId).Program.AcademicTermId &&
+                                                            .Where(ocacdacc => ocacdacc.c.ProgramId == _studentContext.Students.Include(s => s.Program).Single(s => s.StudentId == studentId).ProgramId &&
                                                                               ocacdacc.ocacdac.ac.Name.Equals(courseArgs.UpdatedAcademicTerm) &&
                                                                               ocacdacc.ocacdac.ocacd.acd.AcademicCalendarDetailId >= _studentContext.Students.Single(s => s.StudentId == studentId).AcademicCalendarDetailStartId &&
                                                                               ocacdacc.ocacdac.ocacd.acd.Year == courseArgs.UpdatedAcademicYear &&
@@ -268,8 +268,8 @@ namespace SRV.Api.Services
 
         public async Task<List<CourseDto>> GetCoursesThatTheStudentCouldHaveEnrolled(int studentId)
         {
-            //DO NOT JOIN Program table on AcademicTermId. It will be an issue when you have multiple programs with same AcademicTermId. Fix it.
-            //The unit test with comment //AcademicTermId will fail with previous version of the below query. DOUBLE check other queries with join on AcademicTermId
+            //DO NOT JOIN Program table on AcademicTermId with AcademicTermId from AcademicCalendar table. It will be an issue when you have multiple programs with same AcademicTermId. Fix it.
+            //The unit test with comment //AcademicTermId will fail with previous version of the below query. It works fine in other queries, so DOUBLE check other queries with join on AcademicTermId
             var coursesThatStudentCouldHaveEnrolledFor = await _studentContext.OfferedCourses.Join(_studentContext.Courses, oc => oc.CourseId, c => c.CourseId, (oc, c) => new { oc, c })
                                              .Join(_studentContext.AcademicCalendarDetails, occ => occ.oc.AcademicCalendarDetailId, acd => acd.AcademicCalendarDetailId, (occ, acd) => new { occ, acd })
                                              .Join(_studentContext.AcademicCalendars, occacd => occacd.acd.AcademicCalendarId, ac => ac.AcademicCalendarId, (occacd, ac) => new { occacd, ac })
