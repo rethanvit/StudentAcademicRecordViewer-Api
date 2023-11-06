@@ -1,4 +1,3 @@
-using AutoMapper;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using SRV.Api.Models;

@@ -1,8 +1,6 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using SRV.Api.Models;
 using SRV.DL;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace SRV.Api.Services
